@@ -82,7 +82,7 @@ class GenevaStrokeDataset_pCT(data.Dataset):
     def get_ids(self, indices):
         return [self.ids[index] for index in indices]
 
-    def __getitem__(self, index):
+def __getitem__(self, index):
         '''
         Return sample at index
         :param index: int
@@ -102,17 +102,21 @@ class GenevaStrokeDataset_pCT(data.Dataset):
                 target = np.load(self.dataset_path, allow_pickle=True)['lesion_GT'][split_specific_index].astype(np.uint8)
             mask = np.load(self.dataset_path, allow_pickle=True)['brain_masks'][split_specific_index]
 
+            # Remove first dimension
+            # print(input.shape)
+            if input.ndim < 5:
+                input = np.expand_dims(input, axis=-1)
+            input = np.swapaxes(input,0,4)
+            input = np.squeeze(input, axis=0)
+
             # Make sure there is a channel dimension
             target = np.expand_dims(target, axis=-1)
             mask = np.expand_dims(mask, axis=-1)
-            if input.ndim < 5:
-                input = np.expand_dims(input, axis=-1)
 
             # Apply masks
             input = input * mask
-            # Remove first dimension
-            input = np.squeeze(input, axis=0)
-            assert target.shape == input.shape
+            
+            assert target.shape[0:2] == input.shape[0:2]
 
         else:
             # With preload, it is already only the images from a certain split that are loaded
