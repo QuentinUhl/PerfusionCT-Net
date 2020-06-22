@@ -72,6 +72,9 @@ class GenevaStrokeDataset_pCT(data.Dataset):
             self.raw_masks = np.expand_dims(self.raw_masks, axis=-1)
             if self.raw_images.ndim < 5:
                 self.raw_images = np.expand_dims(self.raw_images, axis=-1)
+            print("Image dimension : ", self.raw_images.shape)
+            print("Label dimension : ", self.raw_labels.shape)
+            print("Mask dimension : ", self.raw_masks.shape)
 
             # Apply masks
             self.raw_images = self.raw_images * self.raw_masks
