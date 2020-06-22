@@ -82,7 +82,7 @@ class GenevaStrokeDataset_pCT(data.Dataset):
     def get_ids(self, indices):
         return [self.ids[index] for index in indices]
 
-def __getitem__(self, index):
+    def __getitem__(self, index):
         '''
         Return sample at index
         :param index: int
