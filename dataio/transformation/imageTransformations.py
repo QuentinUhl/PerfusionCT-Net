@@ -528,6 +528,7 @@ class RandomAffineTransform(TorchIOTransformer):
             self,
             scales: Tuple[float, float] = (0.9, 1.1),
             degrees = 10,
+            translation = (0.0),
             isotropic: bool = False,
             default_pad_value: Union[str, float] = 'otsu',
             image_interpolation: Interpolation = Interpolation.LINEAR,
@@ -542,6 +543,7 @@ class RandomAffineTransform(TorchIOTransformer):
             else:
                 interpolation = image_interpolation
             return RandomAffine(scales, degrees, isotropic, default_pad_value, interpolation, p, seed, is_tensor)
+            # return RandomAffine(scales, degrees, translation, isotropic,'image', default_pad_value, interpolation, p, seed, is_tensor)
         super().__init__(get_transformer=get_torchio_transformer, max_output_channels=max_output_channels)
 
 
