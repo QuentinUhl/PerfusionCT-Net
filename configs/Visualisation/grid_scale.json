@@ -48,6 +48,7 @@
       "shift_val": 0.0,
       
       "random_noise_prob": 0.0,
+      "noise_mean" : 0.0,
       "noise_std": [0.0, 0.0]
     }
   },
