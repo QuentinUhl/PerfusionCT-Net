@@ -609,7 +609,7 @@ class StandardizeImage(object):
     def __call__(self, *inputs):
         # prepare the normalisation flag
         if isinstance(self.norm_flag, bool):
-            norm_flag = [self.norm_flag] * 4 #len(inputs[0].shape)
+            norm_flag = [self.norm_flag] * len(inputs[0].shape)
         else:
             norm_flag = self.norm_flag
         outputs = []
