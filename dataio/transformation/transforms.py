@@ -10,7 +10,7 @@ class Transformations:
         self.name = name
 
         # Input patch and scale size
-        self.scale_size = (192, 192, 1)  # pad up to this shape
+        self.scale_size = (96,96,96,1)  # pad up to this shape
         
         # self.patch_size = (128, 128, 1) # TODO - implement random crop augmentation
 
@@ -107,11 +107,11 @@ class Transformations:
                                   max_output_channels=self.max_output_channels, verbose=True),
             RandomNoiseTransform(mean=self.noise_mean, std=self.noise_std, seed=seed, p=self.random_noise_prob,
                                  max_output_channels=self.max_output_channels),
-            #ts.ChannelsFirst(),
+            ts.ChannelsFirst(),
             # ts.NormalizeMedicPercentile(norm_flag=(True, False)),
             # Apply channel wise standardization
             ts.TypeCast(['float', 'float']),
-            StandardizeImage(norm_flag=[True, True, True, False]),
+            StandardizeImage(norm_flag=[False, True, True, True]),
             # TODO eventually add random crop augmentation (fork torchsample and fix the Random Crop bug)
             # ts.ChannelsLast(), # seems to be needed for crop
             # ts.RandomCrop(size=self.patch_size),
@@ -124,10 +124,10 @@ class Transformations:
         valid_transform = ts.Compose([
             ts.ToTensor(),
             ts.Pad(size=self.scale_size),
-            #ts.ChannelsFirst(),
+            ts.ChannelsFirst(),
             ts.TypeCast(['float', 'float']),
             # ts.NormalizeMedicPercentile(norm_flag=(True, False)),
-            StandardizeImage(norm_flag=[True, True, True, False]),
+            StandardizeImage(norm_flag=[False, True, True, True]),
             # ts.ChannelsLast(),
             # ts.SpecialCrop(size=self.patch_size, crop_type=0),
             ts.TypeCast(['float', 'long'])
