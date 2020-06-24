@@ -47,7 +47,7 @@
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
-      "noise_std": [0.0, 10.0]
+      "noise_std": [0.0, 3.0]
     }
   },
   "model":{
