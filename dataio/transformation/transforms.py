@@ -71,8 +71,8 @@ class Transformations:
 
         # Noise Transformation
         if hasattr(t_opts, 'random_noise_prob'):        self.random_noise_prob =    t_opts.random_noise_prob
+        if hasattr(t_opts, 'noise_mean'):               self.noise_mean =           t_opts.noise_mean
         if hasattr(t_opts, 'noise_std'):                self.noise_std =            t_opts.noise_std
-		if hasattr(t_opts, 'noise_mean'):               self.noise_mean =           t_opts.noise_mean
         
         # Other ideas # TODO
         # if hasattr(t_opts, 'patch_size'):             self.patch_size =           t_opts.patch_size
