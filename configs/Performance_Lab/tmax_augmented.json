@@ -1,7 +1,7 @@
 {
   "training":{
     "arch_type": "gsd_pCT",
-    "n_epochs": 99,
+    "n_epochs": 300,
     "lr_policy": "step",
     "lr_decay_iters": 250,
     "batchSize": 2,
@@ -37,7 +37,7 @@
       "flip_prob_per_axis": 0.5,
       
       "random_elastic_prob": 1.0,
-      "max_deform": [10, 10, 0],
+      "max_deform": [8, 8, 0],
       "elastic_control_points": [7, 7, 7],
       
       "random_affine_prob": 1.0,
@@ -47,7 +47,7 @@
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
-      "noise_std": [0.0, 3.0]
+      "noise_std": [0.0, 1.0]
     }
   },
   "model":{
