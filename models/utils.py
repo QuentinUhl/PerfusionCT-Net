@@ -144,7 +144,7 @@ class EarlyStopper():
         best_loss = model.best_validation_loss
         best_epoch = model.best_epoch
 
-        if current_loss <= best_loss or epoch < 100:  # start early stopping after epoch 100
+        if current_loss <= best_loss or epoch < 1000:  # start early stopping after epoch 1000
             self.index = 0
             print('current loss {} improved from {} at epoch {}'.format(current_loss, best_loss, best_epoch),
                   '-- idx_early_stopping = {} / {}'.format(self.index, self.patience))
