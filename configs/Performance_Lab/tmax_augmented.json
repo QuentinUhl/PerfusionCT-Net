@@ -37,13 +37,13 @@
       "flip_prob_per_axis": 0.5,
       
       "random_elastic_prob": 1.0,
-      "max_deform": [8, 8, 0],
+      "max_deform": [7, 7, 0],
       "elastic_control_points": [7, 7, 7],
       
       "random_affine_prob": 1.0,
-      "scale_val": [0.8,1.2],
-      "rotate": 7.0,
-      "shift_val": 0.0,
+      "scale_val": [0.7,1.6],
+      "rotate": 90.0,
+      "shift_val": 10.0,
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,

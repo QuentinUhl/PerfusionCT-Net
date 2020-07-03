@@ -40,6 +40,8 @@ def get_criterion(opts):
         criterion = CustomSoftDiceLoss(opts.output_nc, class_ids=[0, 2])
     elif opts.criterion == 'focal_tversky_loss':
         criterion = FocalTverskyLoss()
+    elif opts.criterion == 'combined_loss':
+        criterion = CombinedLoss(opts.output_nc)
 
     return criterion
 

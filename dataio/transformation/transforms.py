@@ -101,17 +101,23 @@ class Transformations:
                                    image_interpolation='bspline',
                                    seed=seed, p=self.random_elastic_prob,
                                    max_output_channels=self.max_output_channels, verbose=True),
-            RandomAffineTransform(scales=self.scale_val, degrees=self.rotate_val, translation=self.shift_val,
+            RandomAffineTransform(scales=(1.0,1.0), degrees=0.0, translation=self.shift_val,
                                   isotropic=True, default_pad_value=0,
                                   image_interpolation='bspline', seed=seed, p=self.random_affine_prob,
                                   max_output_channels=self.max_output_channels, verbose=True),
-            RandomNoiseTransform(mean=self.noise_mean, std=self.noise_std, seed=seed, p=self.random_noise_prob,
-                                 max_output_channels=self.max_output_channels),
+            RandomAffineTransform(scales=self.scale_val, degrees=self.rotate_val, translation=0.0,
+                                  isotropic=True, default_pad_value=0,
+                                  image_interpolation='bspline', seed=seed, p=self.random_affine_prob,
+                                  max_output_channels=self.max_output_channels, verbose=True),
             ts.ChannelsFirst(),
             # ts.NormalizeMedicPercentile(norm_flag=(True, False)),
             # Apply channel wise standardization
             ts.TypeCast(['float', 'float']),
             StandardizeImage(norm_flag=[False, True, True, True]),
+            ts.ChannelsLast(), #TODO Useful ?
+            RandomNoiseTransform(mean=self.noise_mean, std=self.noise_std, seed=seed, p=self.random_noise_prob,
+                                 max_output_channels=self.max_output_channels),
+            ts.ChannelsFirst(), #TODO Useful ?
             # TODO eventually add random crop augmentation (fork torchsample and fix the Random Crop bug)
             # ts.ChannelsLast(), # seems to be needed for crop
             # ts.RandomCrop(size=self.patch_size),

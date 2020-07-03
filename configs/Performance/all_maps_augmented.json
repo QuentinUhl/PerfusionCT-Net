@@ -23,7 +23,7 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "D:/GitHub/StrokeLesionPredict-BIO503/data/working_data/pct_unet_all_2016_2017_complete/rescaled_data_set.npz"
+    "gsd_pCT": "D:/GitHub/StrokeLesionPredict-BIO503/data/working_data/pct_unet_all_2016_2017/rescaled_data_set.npz"
   },
   "data_opts":{
     "channels": [0, 1, 2, 3]
@@ -37,7 +37,7 @@
       "flip_prob_per_axis": 0.5,
       
       "random_elastic_prob": 1.0,
-      "max_deform": [10, 10, 0],
+      "max_deform": [7, 7, 0],
       "elastic_control_points": [7, 7, 7],
       
       "random_affine_prob": 1.0,
@@ -47,7 +47,7 @@
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
-      "noise_std": [0.0, 10.0]
+      "noise_std": [0.0, 1.0]
     }
   },
   "model":{
@@ -66,7 +66,7 @@
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "all_maps_augmented",
-    "criterion": "dice_loss"
+    "criterion": "combined_loss"
   }
 }
 

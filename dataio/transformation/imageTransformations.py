@@ -537,8 +537,8 @@ class RandomElasticTransform(TorchIOTransformer):
 class RandomAffineTransform(TorchIOTransformer):
     def __init__(
             self,
-            scales: Tuple[float, float] = (0.9, 1.1),
-            degrees = 10,
+            scales: Tuple[float, float] = (1.0, 1.0),
+            degrees = 0,
             translation = 0,
             center: str = 'image',
             isotropic: bool = False,
