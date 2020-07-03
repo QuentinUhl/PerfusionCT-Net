@@ -183,8 +183,8 @@ class CombinedLoss(nn.Module):
         
         N_plus = torch.sum(target)
         N_minus = torch.sum(1.0 - target)
-        print("\nN+ : ",N_plus)
-        print("\nN- : ",N_minus)
+        # print("\nN+ : ",N_plus)
+        # print("\nN- : ",N_minus)
         
         # Calculate Weightd Binary Cross Entropy
         R0 = 1.0 / ( (N_minus.item())/ (N_plus.item() + 1e-10) + 1.0 )
