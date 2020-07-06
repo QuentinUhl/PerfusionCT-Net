@@ -6,7 +6,12 @@
     "lr_decay_iters": 250,
     "batchSize": 2,
     "preloadData": true,
-    "early_stopping_patience": 10
+    "early_stopping":{
+      "patience": 10,
+      "min_epochs": 15,
+      "monitor": "Seg_Loss"
+    },
+    "verbose": "True"
   },
   "visualisation":{
     "display_port": 8097,
@@ -39,7 +44,8 @@
       "random_affine_prob": 0.5,
       "random_elastic_prob": 0.5,
       "random_noise_prob": 0.5,
-      "scale_size": [96,96,96,1]
+      "scale_size": [96,96,96,1],
+      "prudent": "False"
     }
   },
   "model":{
@@ -57,7 +63,7 @@
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "config_saving_check",
+    "experiment_name": "early_stopping",
     "criterion": "dice_loss"
   }
 }
