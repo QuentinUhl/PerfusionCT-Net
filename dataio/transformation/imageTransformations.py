@@ -473,7 +473,7 @@ class PadToScale(object):
     def __repr__(self):
         return self.__class__.__name__ + f'(fill={self.fill}, padding_mode={self.padding_mode}, scale_size={self.scale_size})'
 
-
+# TODO
 class TorchIOTransformer(object):
     def __init__(self, get_transformer, max_output_channels=10, verbose=False):
         self.get_transformer = get_transformer

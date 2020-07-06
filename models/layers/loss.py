@@ -210,7 +210,7 @@ class CombinedLoss(nn.Module):
         inter = torch.sum(dice_input * dice_target, 2) + smooth
         union = torch.sum(dice_input, 2) + torch.sum(dice_target, 2) + smooth
         dice_score = torch.sum(2.0 * inter / union)
-        dice_score = 1.0 - dice_score / (float(batch_size) * float(self.n_classes))
+        dice_score = 1.0 - dice_score # / (float(batch_size) * float(self.n_classes))
         
         if dice_score > 1e7:
             print("dice score went too high")
@@ -222,11 +222,12 @@ class CombinedLoss(nn.Module):
             print("L1_Loss went too high")
         
         # Calculate Volume Loss
+        # TODO catch
         if N_plus.item() == 0:
             Volume_Loss = 0
             print("No positive voxel")
         else:
-            Volume_Loss = torch.sum(torch.abs(dice_input - dice_target)) / 2 / N_plus.item()
+            Volume_Loss = torch.abs(torch.sum(dice_input - dice_target)) / 2 / N_plus.item()
         
         if Volume_Loss > 1e7:
             print("Volume_Loss went too high")
