@@ -4,7 +4,7 @@
     "n_epochs": 300,
     "lr_policy": "step",
     "lr_decay_iters": 250,
-    "batchSize": 2,
+    "batchSize": 10,
     "preloadData": true,
     "early_stopping":{
       "patience": 10,
@@ -72,7 +72,7 @@
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "all_maps_augmented",
-    "criterion": "combined_loss"
+    "criterion": "dice_loss"
   }
 }
 
