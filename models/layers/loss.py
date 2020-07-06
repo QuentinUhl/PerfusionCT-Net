@@ -222,12 +222,11 @@ class CombinedLoss(nn.Module):
             print("L1_Loss went too high")
         
         # Calculate Volume Loss
-        # TODO catch
-        if N_plus.item() == 0:
-            Volume_Loss = 0
-            print("No positive voxel")
-        else:
+        try:
             Volume_Loss = torch.abs(torch.sum(dice_input - dice_target)) / 2 / N_plus.item()
+        except ZeroDivisionError:
+            Volume_Loss = 0.0
+            print("Exception raised : The number of positive voxels is equal to 0")
         
         if Volume_Loss > 1e7:
             print("Volume_Loss went too high")
