@@ -4,7 +4,7 @@
     "n_epochs": 300,
     "lr_policy": "step",
     "lr_decay_iters": 250,
-    "batchSize": 10,
+    "batchSize": 4,
     "preloadData": true,
     "early_stopping":{
       "patience": 10,
