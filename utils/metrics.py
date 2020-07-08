@@ -177,7 +177,7 @@ def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
     label_gt = gts[1]
     label_pred = preds[1]
 
-    epsilon = 1.0e-12
+    epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
     WBCE_score = 0.0
     
@@ -189,7 +189,8 @@ def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
     R0 = N_plus / ( N_minus + N_plus )
     R1 = 1.0 - R0
     N = N_plus + N_minus
-    WBCE_score = -(1.0/N) * np.sum(R0*img_gt*np.log(epsilon+(1-2*epsilon)*img_pred) + R1*(1-img_gt)*np.log(1-(epsilon+(1-2*epsilon)*img_pred)))
+    img_pred_prob = epsilon+(1.0-2*epsilon)*img_pred
+    WBCE_score = -(1.0/N) * np.sum(R0*img_gt*np.log(img_pred_prob) + R1*(1-img_gt)*np.log(1.0-img_pred_prob))
 
     return WBCE_score
 
