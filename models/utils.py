@@ -6,7 +6,7 @@ import os
 import numpy as np
 import torch.optim as optim
 from torch.nn import CrossEntropyLoss
-from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc
+from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL
 from sklearn import metrics
 from .layers.loss import *
 
@@ -42,6 +42,16 @@ def get_criterion(opts):
         criterion = FocalTverskyLoss()
     elif opts.criterion == 'combined_loss':
         criterion = CombinedLoss(opts.output_nc)
+    
+    elif opts.criterion == 'WBCE_Loss':
+        criterion = WBCELoss(opts.output_nc)
+    elif opts.criterion == 'L1_Loss':
+        criterion = L1Loss(opts.output_nc)
+    elif opts.criterion == 'DiceinCombinedLoss':
+        criterion = DiceinCombinedLoss(opts.output_nc)
+    elif opts.criterion == 'Volume_Loss':
+        criterion = VolumeLoss(opts.output_nc)
+        
 
     return criterion
 
@@ -96,8 +106,12 @@ def segmentation_stats(prediction, target):
     class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
     single_class_dice = single_class_dice_score(gts, preds)
     roc_auc_score = roc_auc(gts, preds)
+    
+    WBCE = Weighted_Binary_Cross_Entropy(gts, preds, n_class=n_unique_classes)
+    L1Loss = L1(gts, preds, n_class=n_unique_classes)
+    VolumeLoss = VolumeL(gts, preds, n_class=n_unique_classes)
 
-    return iou, class_wise_dice, single_class_dice, roc_auc_score
+    return iou, class_wise_dice, single_class_dice, roc_auc_score, WBCE, L1Loss, VolumeLoss
 
 
 def classification_scores(gts, preds, labels):

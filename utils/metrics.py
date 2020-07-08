@@ -165,3 +165,66 @@ def distance_metric(seg_A, seg_B, dx, k):
     mean_md = np.mean(table_md) if table_md else None
     mean_hd = np.mean(table_hd) if table_hd else None
     return mean_md, mean_hd
+
+def Weighted_Binary_Cross_Entropy(label_gt, label_pred, n_class):
+    """
+
+    :param label_gt:
+    :param label_pred:
+    :param n_class:
+    :return:
+    """
+
+    epsilon = 1.0e-6
+    assert np.all(label_gt.shape == label_pred.shape)
+    WBCE_score = 0.0
+    
+    img_gt = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_pred = np.array(label_pred == 1, dtype=np.float32).flatten()
+    
+    N_plus = np.sum(img_gt)
+    N_minus = np.sum(1-img_gt)
+    R0 = 1.0 / ( (N_minus)/ (N_plus + epsilon) + 1.0 )
+    R1 = 1.0 - R0
+    N = len(img_gt)
+    WBCE_score = -(1.0/N) * np.sum(R0*img_gt*np.log(img_pred) + R1*(1-img_gt)*np.log(1-img_pred))
+
+    return WBCE_score
+
+def L1(label_gt, label_pred, n_class):
+    """
+
+    :param label_gt:
+    :param label_pred:
+    :param n_class:
+    :return:
+    """
+
+    epsilon = 1.0e-6
+    assert np.all(label_gt.shape == label_pred.shape)
+    L1_score = 0.0
+    
+    img_A = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_B = np.array(label_pred == 1, dtype=np.float32).flatten()
+    L1_score = np.mean(np.abs(img_A - img_B)) #2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+    
+    return L1_score
+
+def VolumeL(label_gt, label_pred, n_class):
+    """
+
+    :param label_gt:
+    :param label_pred:
+    :param n_class:
+    :return:
+    """
+
+    epsilon = 1.0e-6
+    assert np.all(label_gt.shape == label_pred.shape)
+    vol_score = 0.0
+    
+    img_A = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_B = np.array(label_pred == 1, dtype=np.float32).flatten()
+    vol_score = np.abs(np.mean(img_A - img_B)) #2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+
+    return vol_score
