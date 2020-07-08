@@ -187,7 +187,7 @@ class CombinedLoss(nn.Module):
         # print("\nN- : ",N_minus)
         
         # Calculate Weightd Binary Cross Entropy
-        R0 = 1.0 / ( (N_minus.item())/ (N_plus.item() + 1e-10) + 1.0 )
+        R0 = N_plus.item() / ( N_minus.item() + N_plus.item() )
         R1 = 1.0 - R0
         weight = torch.tensor([R0, R1], device = input.device) 
         # print("\nweight : ",weight)
@@ -252,7 +252,7 @@ class WBCELoss(nn.Module):
         # print("\nN- : ",N_minus)
         
         # Calculate Weightd Binary Cross Entropy
-        R0 = 1.0 / ( (N_minus.item())/ (N_plus.item() + 1e-10) + 1.0 )
+        R0 = N_plus.item() / ( N_minus.item() + N_plus.item() )
         R1 = 1.0 - R0
         weight = torch.tensor([R0, R1], device = input.device) 
         # print("\nweight : ",weight)

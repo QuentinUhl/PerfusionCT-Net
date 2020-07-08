@@ -4,10 +4,10 @@
     "n_epochs": 300,
     "lr_policy": "step",
     "lr_decay_iters": 250,
-    "batchSize": 4,
+    "batchSize": 2,
     "preloadData": true,
     "early_stopping":{
-      "patience": 10,
+      "patience": 40,
       "min_epochs": 15,
       "monitor": "Seg_Loss"
     },
@@ -47,7 +47,7 @@
       "elastic_control_points": [7, 7, 7],
       
       "random_affine_prob": 1.0,
-      "scale_val": [0.7,1.6],
+      "scale_val": [0.8,1.3],
       "rotate": 90.0,
       "shift_val": 10.0,
       

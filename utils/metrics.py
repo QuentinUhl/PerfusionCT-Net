@@ -177,7 +177,7 @@ def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
     label_gt = gts[1]
     label_pred = preds[1]
 
-    epsilon = 1.0e-6
+    epsilon = 1.0e-12
     assert np.all(label_gt.shape == label_pred.shape)
     WBCE_score = 0.0
     
@@ -186,10 +186,10 @@ def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
     
     N_plus = np.sum(img_gt)
     N_minus = np.sum(1-img_gt)
-    R0 = 1.0 / ( (N_minus)/ (N_plus + epsilon) + 1.0 )
+    R0 = N_plus / ( N_minus + N_plus )
     R1 = 1.0 - R0
-    N = len(img_gt)
-    WBCE_score = -(1.0/N) * np.sum(R0*img_gt*np.log(img_pred) + R1*(1-img_gt)*np.log(1-img_pred))
+    N = N_plus + N_minus
+    WBCE_score = -(1.0/N) * np.sum(R0*img_gt*np.log(epsilon+(1-2*epsilon)*img_pred) + R1*(1-img_gt)*np.log(1-(epsilon+(1-2*epsilon)*img_pred)))
 
     return WBCE_score
 
@@ -204,13 +204,12 @@ def L1(gts, preds, n_class):
     label_gt = gts[1]
     label_pred = preds[1]
     
-    epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
     L1_score = 0.0
     
     img_A = np.array(label_gt == 1, dtype=np.float32).flatten()
     img_B = np.array(label_pred == 1, dtype=np.float32).flatten()
-    L1_score = np.mean(np.abs(img_A - img_B)) #2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+    L1_score = np.mean(np.abs(img_A - img_B))
     
     return L1_score
 
@@ -224,13 +223,15 @@ def VolumeL(gts, preds, n_class):
     """
     label_gt = gts[1]
     label_pred = preds[1]
-
-    epsilon = 1.0e-6
+    
     assert np.all(label_gt.shape == label_pred.shape)
     vol_score = 0.0
+    N_plus = np.sum(img_gt)
     
     img_A = np.array(label_gt == 1, dtype=np.float32).flatten()
     img_B = np.array(label_pred == 1, dtype=np.float32).flatten()
-    vol_score = np.abs(np.mean(img_A - img_B)) #2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
-
+    if N_plus!=0:
+        vol_score = np.abs(np.sum(img_A - img_B)/N_plus)
+    else:
+        vol_score = np.abs(np.sum(img_A - img_B))
     return vol_score
