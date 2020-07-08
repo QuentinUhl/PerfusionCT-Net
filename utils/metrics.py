@@ -207,9 +207,9 @@ def L1(gts, preds, n_class):
     assert np.all(label_gt.shape == label_pred.shape)
     L1_score = 0.0
     
-    img_A = np.array(label_gt == 1, dtype=np.float32).flatten()
-    img_B = np.array(label_pred == 1, dtype=np.float32).flatten()
-    L1_score = np.mean(np.abs(img_A - img_B))
+    img_gt = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_pred = np.array(label_pred == 1, dtype=np.float32).flatten()
+    L1_score = np.mean(np.abs(img_gt - img_pred))
     
     return L1_score
 
@@ -226,12 +226,13 @@ def VolumeL(gts, preds, n_class):
     
     assert np.all(label_gt.shape == label_pred.shape)
     vol_score = 0.0
+    
+    img_gt = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_pred = np.array(label_pred == 1, dtype=np.float32).flatten()
     N_plus = np.sum(img_gt)
     
-    img_A = np.array(label_gt == 1, dtype=np.float32).flatten()
-    img_B = np.array(label_pred == 1, dtype=np.float32).flatten()
     if N_plus!=0:
-        vol_score = np.abs(np.sum(img_A - img_B)/N_plus)
+        vol_score = np.abs(np.sum(img_gt - img_pred)/N_plus)
     else:
-        vol_score = np.abs(np.sum(img_A - img_B))
+        vol_score = np.abs(np.sum(img_gt - img_pred))
     return vol_score
