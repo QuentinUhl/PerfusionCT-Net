@@ -166,7 +166,7 @@ def distance_metric(seg_A, seg_B, dx, k):
     mean_hd = np.mean(table_hd) if table_hd else None
     return mean_md, mean_hd
 
-def Weighted_Binary_Cross_Entropy(label_gt, label_pred, n_class):
+def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
     """
 
     :param label_gt:
@@ -174,6 +174,8 @@ def Weighted_Binary_Cross_Entropy(label_gt, label_pred, n_class):
     :param n_class:
     :return:
     """
+    label_gt = gts[1]
+    label_pred = preds[1]
 
     epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
@@ -191,7 +193,7 @@ def Weighted_Binary_Cross_Entropy(label_gt, label_pred, n_class):
 
     return WBCE_score
 
-def L1(label_gt, label_pred, n_class):
+def L1(gts, preds, n_class):
     """
 
     :param label_gt:
@@ -199,7 +201,9 @@ def L1(label_gt, label_pred, n_class):
     :param n_class:
     :return:
     """
-
+    label_gt = gts[1]
+    label_pred = preds[1]
+    
     epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
     L1_score = 0.0
@@ -210,7 +214,7 @@ def L1(label_gt, label_pred, n_class):
     
     return L1_score
 
-def VolumeL(label_gt, label_pred, n_class):
+def VolumeL(gts, preds, n_class):
     """
 
     :param label_gt:
@@ -218,6 +222,8 @@ def VolumeL(label_gt, label_pred, n_class):
     :param n_class:
     :return:
     """
+    label_gt = gts[1]
+    label_pred = preds[1]
 
     epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
