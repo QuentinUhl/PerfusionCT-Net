@@ -72,7 +72,7 @@
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "all_maps_augmented",
-    "criterion": "dice_loss"
+    "criterion": "WBCE_Loss"
   }
 }
 
