@@ -174,8 +174,8 @@ def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
     :param n_class:
     :return:
     """
-    label_gt = gts[1]
-    label_pred = preds[1]
+    label_gt = gts[0]
+    label_pred = preds[0]
 
     epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
@@ -202,8 +202,8 @@ def L1(gts, preds, n_class):
     :param n_class:
     :return:
     """
-    label_gt = gts[1]
-    label_pred = preds[1]
+    label_gt = gts[0]
+    label_pred = preds[0]
     
     assert np.all(label_gt.shape == label_pred.shape)
     L1_score = 0.0
@@ -222,8 +222,8 @@ def VolumeL(gts, preds, n_class):
     :param n_class:
     :return:
     """
-    label_gt = gts[1]
-    label_pred = preds[1]
+    label_gt = gts[0]
+    label_pred = preds[0]
     
     assert np.all(label_gt.shape == label_pred.shape)
     vol_score = 0.0
