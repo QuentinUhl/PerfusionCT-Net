@@ -7,8 +7,8 @@
     "batchSize": 2,
     "preloadData": true,
     "early_stopping":{
-      "patience": 10,
-      "min_epochs": 15,
+      "patience": 60,
+      "min_epochs": 150,
       "monitor": "Seg_Loss"
     },
     "verbose": "True"
@@ -28,7 +28,7 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/rescaled_data_set.npz"
+    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/clean_smooth_data_set.npz"
   },
   "data_opts":{
     "channels": [0, 1, 2, 3]
