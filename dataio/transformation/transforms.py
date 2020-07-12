@@ -115,18 +115,12 @@ class Transformations:
                                   isotropic=True, default_pad_value=0,
                                   image_interpolation='bspline', seed=seed, p=self.random_affine_prob,
                                   max_output_channels=self.max_output_channels, verbose=self.verbose, prudent=self.prudent),
-            ts.ChannelsFirst(),
-            # ts.NormalizeMedicPercentile(norm_flag=(True, False)),
             # Apply channel wise standardization
-            ts.TypeCast(['float', 'float']),
-            StandardizeImage(norm_flag=[False, True, True, True]),
-            ts.ChannelsLast(),
+            StandardizeImage(norm_flag=[True, True, True, False]),
             RandomNoiseTransform(mean=self.noise_mean, std=self.noise_std, seed=seed, p=self.random_noise_prob,
                                  max_output_channels=self.max_output_channels, prudent=self.prudent),
+            # Todo eventually add random crop augmentation (fork torchsample and fix the Random Crop bug)
             ts.ChannelsFirst(),
-            # TODO eventually add random crop augmentation (fork torchsample and fix the Random Crop bug)
-            # ts.ChannelsLast(), # seems to be needed for crop
-            # ts.RandomCrop(size=self.patch_size),
             ts.TypeCast(['float', 'long'])
         ])
 
@@ -136,12 +130,10 @@ class Transformations:
         valid_transform = ts.Compose([
             ts.ToTensor(),
             ts.Pad(size=self.scale_size),
-            ts.ChannelsFirst(),
             ts.TypeCast(['float', 'float']),
-            # ts.NormalizeMedicPercentile(norm_flag=(True, False)),
-            StandardizeImage(norm_flag=[False, True, True, True]),
-            # ts.ChannelsLast(),
-            # ts.SpecialCrop(size=self.patch_size, crop_type=0),
+            # Apply channel wise standardization
+            StandardizeImage(norm_flag=[True, True, True, False]),
+            ts.ChannelsFirst(),
             ts.TypeCast(['float', 'long'])
         ])
 

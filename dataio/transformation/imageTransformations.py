@@ -600,16 +600,17 @@ class RandomNoiseTransform(TorchIOTransformer):
             return RandomNoise(mean=mean, std=std, p=proba, seed=seed)
         super().__init__(get_transformer=get_torchio_transformer, max_output_channels=max_output_channels, prudent=prudent)
 
+
 class StandardizeImage(object):
     """
-    Normalises given volume to zero mean
-    and unit standard deviation.
+    Normalises given volume to zero mean and unit standard deviation.
+    :arg norm_flag: List[bool], define which axis should be normalised and which should not
     """
 
     def __init__(self,
                  norm_flag=[True, True, True, False]):
         """
-        :param norm_flag: [bool] list of flags for normalisation
+        :param norm_flag: [bool] list of flags for normalisation, defining which axis should be normalised
         """
         self.norm_flag = norm_flag
 
@@ -622,19 +623,19 @@ class StandardizeImage(object):
         outputs = []
         for idx, _input in enumerate(inputs):
             # Normalize only the image, not the mask
-            if idx==0:
-                assert(len(norm_flag) == len(_input.shape))
+            if idx == 0:
+                assert (len(norm_flag) == len(_input.shape))
                 dim_to_reduce = ()
                 for i in range(len(_input.shape)):
                     if norm_flag[i]:
-                        dim_to_reduce+=(i,)
+                        dim_to_reduce += (i,)
                 if norm_flag[idx]:
                     # subtract the mean intensity value
-                    mean_val = _input.mean(dim = dim_to_reduce)
+                    mean_val = _input.mean(dim=dim_to_reduce)
                     _input = _input.add(-1.0 * mean_val)
-    
+
                     # scale the intensity values to be unit norm
-                    std_val = _input.std(dim = dim_to_reduce)
+                    std_val = _input.std(dim=dim_to_reduce)
                     _input = _input.div(1.0 * std_val)
 
             outputs.append(_input)
