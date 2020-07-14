@@ -101,8 +101,8 @@ def segmentation_stats(prediction, target, output_cdim):
             pred_lbls = prediction.data.max(1)[1].cpu().numpy()
             n_unique_classes = n_classes
 
-    print("Shape of prediction :", pred_lbls.shape)
-    print("Shape of target :", target.data.cpu().numpy().shape)
+    # print("Shape of prediction :", pred_lbls.shape)
+    # print("Shape of target :", target.data.cpu().numpy().shape)
     if output_cdim>1:
         gt = target.data.cpu().numpy()
     else:
