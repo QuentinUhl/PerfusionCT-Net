@@ -90,7 +90,7 @@ def adjust_learning_rate(optimizer, init_lr, epoch):
 def segmentation_stats(prediction, target, output_cdim):
     n_classes = prediction.size(1)
     if output_cdim>1:
-        pred_lbls = (torch.sigmoid(prediction) > 0.5)[0].int().cpu().numpy()
+        pred_lbls = (torch.sigmoid(prediction) > 0.5).int().cpu().numpy()
         n_unique_classes = output_cdim
     else:
         if n_classes == 1:
