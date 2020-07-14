@@ -24,6 +24,7 @@ class FeedForwardSegmentation(BaseModel):
         self.input = None
         self.target = None
         self.tensor_dim = opts.tensor_dim
+        self.output_cdim = opts.output_cdim #TODO QUENTIN
 
         # load/define networks
         self.net = get_network(opts.model_type, n_classes=opts.output_nc,
@@ -85,8 +86,12 @@ class FeedForwardSegmentation(BaseModel):
                 self.prediction = self.net(Variable(self.input))
                 # Apply a softmax and return a segmentation map
                 if self.prediction.shape[1] > 1: # multiclass
-                    self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1)
-                    self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
+                    if self.output_cdim==1:
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1)
+                        self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
+                    else:
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
+                        self.pred_seg = (self.logits > 0.5).float()
                 else:
                     self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
                     self.pred_seg = (self.logits > 0.5).float()
@@ -125,7 +130,7 @@ class FeedForwardSegmentation(BaseModel):
         self.loss_S = self.criterion(self.prediction, self.target)
 
     def get_segmentation_stats(self):
-        self.seg_scores, self.class_dice_score, self.overall_dice_score, self.roc_auc_score, self.WBCE_score, self.L1_score, self.Volume_score = segmentation_stats(self.prediction, self.target)
+        self.seg_scores, self.class_dice_score, self.overall_dice_score, self.roc_auc_score, self.WBCE_score, self.L1_score, self.Volume_score = segmentation_stats(self.prediction, self.target, self.output_cdim)
         seg_stats = [('Overall_Acc', self.seg_scores['overall_acc']), ('Mean_IOU', self.seg_scores['mean_iou']),
                      ('Overall_Dice', self.overall_dice_score), ('ROC_AUC', self.roc_auc_score),
                      ('WBCE_score', self.WBCE_score), ('L1_score', self.L1_score), ('Volume_score', self.Volume_score)]

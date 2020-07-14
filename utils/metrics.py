@@ -96,7 +96,7 @@ def single_class_dice_score(target, input):
     tflat = np.array(target).flatten()
     intersection = (iflat * tflat).sum()
 
-    return ((2. * intersection + smooth) /
+    return ((2. * intersection) /
             (iflat.sum() + tflat.sum() + smooth))
 
 

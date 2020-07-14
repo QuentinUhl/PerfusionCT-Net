@@ -68,7 +68,8 @@ class GenevaStrokeDataset_pCT(data.Dataset):
                 self.raw_labels = np.load(dataset_path, allow_pickle=True)['lesion_GT'][self.split_indices].astype(np.uint8)
 
             # Make sure there is a channel dimension
-            self.raw_labels = np.expand_dims(self.raw_labels, axis=-1)
+            if self.raw_labels.ndim < 5:
+                self.raw_labels = np.expand_dims(self.raw_labels, axis=-1)
             self.raw_masks = np.expand_dims(self.raw_masks, axis=-1)
             if self.raw_images.ndim < 5:
                 self.raw_images = np.expand_dims(self.raw_images, axis=-1)

@@ -35,7 +35,7 @@ def get_criterion(opts):
         elif 'classifier' in opts.type:
             criterion = CrossEntropyLoss()
     elif opts.criterion == 'dice_loss':
-        criterion = SoftDiceLoss(opts.output_nc)
+        criterion = SoftDiceLoss(opts.output_nc, opts.output_cdim)
     elif opts.criterion == 'dice_loss_specific_classes_only':
         criterion = CustomSoftDiceLoss(opts.output_nc, class_ids=[0, 2])
     elif opts.criterion == 'focal_tversky_loss':
@@ -87,16 +87,26 @@ def adjust_learning_rate(optimizer, init_lr, epoch):
         param_group['lr'] = lr
 
 
-def segmentation_stats(prediction, target):
+def segmentation_stats(prediction, target, output_cdim):
     n_classes = prediction.size(1)
-    if n_classes == 1:
+    if output_cdim>1:
         pred_lbls = (torch.sigmoid(prediction) > 0.5)[0].int().cpu().numpy()
-        n_unique_classes = n_classes + 1
+        n_unique_classes = output_cdim
     else:
-        pred_lbls = prediction.data.max(1)[1].cpu().numpy()
-        n_unique_classes = n_classes
+        if n_classes == 1:
+            pred_lbls = (torch.sigmoid(prediction) > 0.5)[0].int().cpu().numpy()
+            n_unique_classes = n_classes + 1
+        else:
+            print(pred_lbls.data.shape)
+            pred_lbls = prediction.data.max(1)[1].cpu().numpy()
+            n_unique_classes = n_classes
 
-    gt = np.squeeze(target.data.cpu().numpy(), axis=1)
+    print("Shape of prediction :", pred_lbls.shape)
+    print("Shape of target :", target.data.cpu().numpy().shape)
+    if output_cdim>1:
+        gt = np.squeeze(target.data.cpu().numpy(), axis=0)
+    else:
+        gt = np.squeeze(target.data.cpu().numpy(), axis=1)
     gts, preds = [], []
     for gt_, pred_ in zip(gt, pred_lbls):
         gts.append(gt_)

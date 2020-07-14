@@ -7,8 +7,8 @@
     "batchSize": 2,
     "preloadData": true,
     "early_stopping":{
-      "patience": 10,
-      "min_epochs": 15,
+      "patience": 60,
+      "min_epochs": 150,
       "monitor": "Seg_Loss"
     },
     "verbose": "True"
@@ -28,7 +28,7 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "D:/GitHub/StrokeLesionPredict-BIO503/data/working_data/pct_unet_all_2016_2017/rescaled_data_set.npz"
+    "gsd_pCT": "D:/GitHub/StrokeLesionPredict-BIO503/data/working_data/pct_unet_all_2016_2017_three_masks/small_3_masks_clean_smooth_data_set.npz"
   },
   "data_opts":{
     "channels": [0]
@@ -36,19 +36,20 @@
   "augmentation": {
     "gsd_pCT": {
       "scale_size": [96,96,96,1],
+      "prudent": 0,
       
       "random_flip_prob": 1.0,
       "flip_axis": [0, 1],
       "flip_prob_per_axis": 0.5,
       
       "random_elastic_prob": 1.0,
-      "max_deform": [10, 10, 0],
+      "max_deform": [7, 7, 0],
       "elastic_control_points": [7, 7, 7],
       
       "random_affine_prob": 1.0,
-      "scale_val": [0.8,1.2],
-      "rotate": 7.0,
-      "shift_val": 0.0,
+      "scale_val": [0.8,1.5],
+      "rotate": 90.0,
+      "shift_val": 10.0,
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
@@ -62,7 +63,7 @@
     "model_type": "unet_pct_multi_att_dsv",
     "tensor_dim": "3D",
     "division_factor": 16,
-    "input_nc": 1,
+    "input_nc": 4,
     "output_nc": 2,
     "lr_rate": 1e-4,
     "l2_reg_weight": 1e-6,
@@ -70,8 +71,8 @@
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "tmax_augmented",
-    "criterion": "combined_loss"
+    "experiment_name": "all_maps_augmented",
+    "criterion": "dice_loss"
   }
 }
 

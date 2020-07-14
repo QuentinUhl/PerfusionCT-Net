@@ -26,10 +26,11 @@ def cross_entropy_3D(input, target, weight=None, size_average=True):
 
 
 class SoftDiceLoss(nn.Module):
-    def __init__(self, n_classes):
+    def __init__(self, n_classes, output_cdim):
         super(SoftDiceLoss, self).__init__()
         self.one_hot_encoder = One_Hot(n_classes).forward
         self.n_classes = n_classes
+        self.output_cdim = output_cdim
 
     def forward(self, input, target):
         smooth = 0.01
@@ -39,8 +40,12 @@ class SoftDiceLoss(nn.Module):
             input = torch.sigmoid(input).view(batch_size, self.n_classes, -1)
             target = target.contiguous().view(batch_size, self.n_classes, -1).float()
         else:
-            input = F.softmax(input, dim=1).view(batch_size, self.n_classes, -1)
-            target = self.one_hot_encoder(target).contiguous().view(batch_size, self.n_classes, -1)
+            if self.output_cdim>1:
+                input = torch.sigmoid(input).view(batch_size, self.output_cdim, -1)
+                target = target.contiguous().view(batch_size, self.output_cdim, -1).float()
+            else:
+                input = F.softmax(input, dim=1).view(batch_size, self.n_classes, -1)
+                target = self.one_hot_encoder(target).contiguous().view(batch_size, self.n_classes, -1)
 
         inter = torch.sum(input * target, 2) + smooth
         union = torch.sum(input, 2) + torch.sum(target, 2) + smooth
