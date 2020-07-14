@@ -103,7 +103,9 @@ def segmentation_stats(prediction, target, output_cdim):
 
     print("Shape of prediction :", pred_lbls.shape)
     print("Shape of target :", target.data.cpu().numpy().shape)
-    if output_cdim==1:
+    if output_cdim>1:
+        gt = target.data.cpu().numpy()
+    else:
         gt = np.squeeze(target.data.cpu().numpy(), axis=1)
     gts, preds = [], []
     for gt_, pred_ in zip(gt, pred_lbls):
