@@ -38,7 +38,7 @@ def segmentation_scores(label_trues, label_preds, n_class):
             'mean_iou': mean_iu}
 
 
-def dice_score_list(label_gt, label_pred, n_class):
+def dice_score_list(label_gt, label_pred, n_class=1):
     """
 
     :param label_gt: [WxH] (2D images)
@@ -51,16 +51,23 @@ def dice_score_list(label_gt, label_pred, n_class):
     batchSize = len(label_gt)
     dice_scores = np.zeros((batchSize, n_class), dtype=np.float32)
     for batch_id, (l_gt, l_pred) in enumerate(zip(label_gt, label_pred)):
-        for class_id in range(n_class):
-            img_A = np.array(l_gt == class_id, dtype=np.float32).flatten()
-            img_B = np.array(l_pred == class_id, dtype=np.float32).flatten()
+        if n_class == 1:
+            img_A = np.array(l_gt, dtype=np.float32).flatten()
+            img_B = np.array(l_pred, dtype=np.float32).flatten()
             score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
-            dice_scores[batch_id, class_id] = score
+            dice_scores[batch_id, 0] = score
+        else:
+            for class_id in range(n_class):
+                img_A = np.array(l_gt == class_id, dtype=np.float32).flatten()
+                img_B = np.array(l_pred == class_id, dtype=np.float32).flatten()
+                score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+                dice_scores[batch_id, class_id] = score
 
     return np.mean(dice_scores, axis=0)
 
 
-def dice_score(label_gt, label_pred, n_class):
+# TODO : Suppress both of these dice functions below (unused)
+def dice_score(label_gt, label_pred, n_class=1):
     """
 
     :param label_gt:
@@ -72,22 +79,19 @@ def dice_score(label_gt, label_pred, n_class):
     epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
     dice_scores = np.zeros(n_class, dtype=np.float32)
-    for class_id in range(n_class):
-        img_A = np.array(label_gt == class_id, dtype=np.float32).flatten()
-        img_B = np.array(label_pred == class_id, dtype=np.float32).flatten()
+    if n_class==1:
+        img_A = np.array(label_gt , dtype=np.float32).flatten()
+        img_B = np.array(label_pred, dtype=np.float32).flatten()
         score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
-        dice_scores[class_id] = score
+        dice_scores[0] = score
+    else:
+        for class_id in range(n_class):
+            img_A = np.array(label_gt == class_id, dtype=np.float32).flatten()
+            img_B = np.array(label_pred == class_id, dtype=np.float32).flatten()
+            score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+            dice_scores[class_id] = score
 
     return dice_scores
-
-
-def roc_auc(label_gt, label_pred):
-    y_true = np.array(label_gt).flatten()
-    y_scores = np.array(label_pred).flatten()
-
-    fpr, tpr, roc_thresholds = roc_curve(y_true, y_scores)
-    roc_auc_score = auc(fpr, tpr)
-    return roc_auc_score
 
 
 def single_class_dice_score(target, input):
@@ -98,6 +102,15 @@ def single_class_dice_score(target, input):
 
     return ((2. * intersection) /
             (iflat.sum() + tflat.sum() + smooth))
+
+
+def roc_auc(label_gt, label_pred):
+    y_true = np.array(label_gt).flatten()
+    y_scores = np.array(label_pred).flatten()
+
+    fpr, tpr, roc_thresholds = roc_curve(y_true, y_scores)
+    roc_auc_score = auc(fpr, tpr)
+    return roc_auc_score
 
 
 def precision_and_recall(label_gt, label_pred, n_class):

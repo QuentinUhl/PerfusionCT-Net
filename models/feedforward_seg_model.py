@@ -1,4 +1,5 @@
 import os
+import torch
 from collections import OrderedDict
 from torch.autograd import Variable
 import utils.utils as util
@@ -24,7 +25,9 @@ class FeedForwardSegmentation(BaseModel):
         self.input = None
         self.target = None
         self.tensor_dim = opts.tensor_dim
-        self.output_cdim = opts.output_cdim #TODO QUENTIN
+        self.output_nc = opts.output_nc
+        self.multi_channel_output = opts.multi_channel_output
+        self.output_cdim = opts.output_cdim
 
         # load/define networks
         self.net = get_network(opts.model_type, n_classes=opts.output_nc,
@@ -85,16 +88,22 @@ class FeedForwardSegmentation(BaseModel):
             with torch.no_grad():
                 self.prediction = self.net(Variable(self.input))
                 # Apply a softmax and return a segmentation map
-                if self.prediction.shape[1] > 1: # multiclass
-                    if self.output_cdim==1:
-                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1)
+                if self.multi_channel_output: 
+                    if self.output_nc > 1: # multiclass in multiple channels
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1) # TODO Verify dim = 1 or 2
                         self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
-                    else:
+                        print("Warning : Multiclass in multiple channels not implemented yet")
+                        print("Help models/feedforward_seg_model")
+                    else: # uniclass in multiple channels
                         self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
                         self.pred_seg = (self.logits > 0.5).float()
                 else:
-                    self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
-                    self.pred_seg = (self.logits > 0.5).float()
+                    if self.output_nc > 1: # multiclass in a single channel
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1)
+                        self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
+                    else: # uniclass in a single channel
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
+                        self.pred_seg = (self.logits > 0.5).float()
 
     def backward(self):
         self.loss_S = self.criterion(self.prediction, self.target)
@@ -130,7 +139,7 @@ class FeedForwardSegmentation(BaseModel):
         self.loss_S = self.criterion(self.prediction, self.target)
 
     def get_segmentation_stats(self):
-        self.seg_scores, self.class_dice_score, self.overall_dice_score, self.roc_auc_score, self.WBCE_score, self.L1_score, self.Volume_score = segmentation_stats(self.prediction, self.target, self.output_cdim)
+        self.seg_scores, self.class_dice_score, self.overall_dice_score, self.roc_auc_score, self.WBCE_score, self.L1_score, self.Volume_score = segmentation_stats(self.prediction, self.target, self.output_nc, self.output_cdim)
         seg_stats = [('Overall_Acc', self.seg_scores['overall_acc']), ('Mean_IOU', self.seg_scores['mean_iou']),
                      ('Overall_Dice', self.overall_dice_score), ('ROC_AUC', self.roc_auc_score),
                      ('WBCE_score', self.WBCE_score), ('L1_score', self.L1_score), ('Volume_score', self.Volume_score)]

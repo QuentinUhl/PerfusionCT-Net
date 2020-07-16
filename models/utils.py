@@ -4,6 +4,7 @@ Misc Utility functions
 
 import os
 import numpy as np
+import torch
 import torch.optim as optim
 from torch.nn import CrossEntropyLoss
 from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL
@@ -52,6 +53,9 @@ def get_criterion(opts):
     elif opts.criterion == 'Volume_Loss':
         criterion = VolumeLoss(opts.output_nc)
         
+    elif opts.criterion == 'weighted_dice_loss':
+        criterion = WeightedDiceLoss(opts.output_nc, opts.output_cdim, opts.loss_weights)
+        
 
     return criterion
 
@@ -87,34 +91,51 @@ def adjust_learning_rate(optimizer, init_lr, epoch):
         param_group['lr'] = lr
 
 
-def segmentation_stats(prediction, target, output_cdim):
-    n_classes = prediction.size(1)
+def segmentation_stats(prediction, target, output_nc, output_cdim):
+    n_classes = output_nc
     if output_cdim>1:
-        pred_lbls = (torch.sigmoid(prediction) > 0.5).int().cpu().numpy()
-        n_unique_classes = output_cdim
+        if n_classes == 1: # uniclass in multiple channels
+            pred_lbls = (prediction > 0.5).int().cpu().numpy()
+            n_unique_classes = 1
+        else: # multiclass in multiple channels
+            print("Warning : Multiclass in multiple channels not implemented yet")
+            pred_lbls = prediction.data.max(2)[1].cpu().numpy()
+            print("Label Prediction Shape : ", pred_lbls.data.shape)
+            n_unique_classes = n_classes
     else:
-        if n_classes == 1:
-            pred_lbls = (torch.sigmoid(prediction) > 0.5)[0].int().cpu().numpy()
-            n_unique_classes = n_classes + 1
-        else:
-            print(pred_lbls.data.shape)
+        if n_classes == 1: # uniclass in a single channels
+            pred_lbls = (prediction > 0.5)[0].int().cpu().numpy()
+            n_unique_classes = 1
+        else: # multiclass in a single channels
             pred_lbls = prediction.data.max(1)[1].cpu().numpy()
+            print("Label Prediction Shape : ", pred_lbls.data.shape)
             n_unique_classes = n_classes
 
     # print("Shape of prediction :", pred_lbls.shape)
     # print("Shape of target :", target.data.cpu().numpy().shape)
+    
     if output_cdim>1:
         gt = target.data.cpu().numpy()
     else:
         gt = np.squeeze(target.data.cpu().numpy(), axis=1)
+    
     gts, preds = [], []
-    for gt_, pred_ in zip(gt, pred_lbls):
-        gts.append(gt_)
-        preds.append(pred_)
 
+    if output_cdim>1:
+        for gt_, pred_ in zip(gt, pred_lbls):
+            gts.append(gt_[0,...])
+            preds.append(pred_[0,...])
+    else:
+        for gt_, pred_ in zip(gt, pred_lbls):
+            gts.append(gt_)
+            preds.append(pred_)
+        
     iou = segmentation_scores(gts, preds, n_class=n_unique_classes)
-    class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
-    single_class_dice = single_class_dice_score(gts, preds)
+    if n_classes == 1:
+        class_wise_dice = dice_score_list(gts, preds, n_class=2)
+    else:
+        class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
+    single_class_dice = dice_score_list(gts, preds, n_class = 1)
     roc_auc_score = roc_auc(gts, preds)
     
     WBCE = Weighted_Binary_Cross_Entropy(gts, preds, n_class=n_unique_classes)

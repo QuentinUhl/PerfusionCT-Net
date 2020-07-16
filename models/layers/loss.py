@@ -35,14 +35,20 @@ class SoftDiceLoss(nn.Module):
     def forward(self, input, target):
         smooth = 0.01
         batch_size = input.size(0)
-
-        if self.n_classes == 1:
-            input = torch.sigmoid(input).view(batch_size, self.n_classes, -1)
-            target = target.contiguous().view(batch_size, self.n_classes, -1).float()
-        else:
-            if self.output_cdim>1:
+        
+        if self.output_cdim>1:
+            if self.n_classes == 1:
                 input = torch.sigmoid(input).view(batch_size, self.output_cdim, -1)
                 target = target.contiguous().view(batch_size, self.output_cdim, -1).float()
+            else:
+                input = F.softmax(input, dim=1).view(batch_size, self.output_cdim, self.n_classes, -1) # TODO Verify if dim = 1 or 2
+                target = self.one_hot_encoder(target).contiguous().view(batch_size, self.output_cdim, self.n_classes, -1)
+                print("Warning : Multiclass in multiple channels not implemented yet")
+                print("Help models/layers/loss")
+        else:
+            if self.n_classes == 1:
+                input = torch.sigmoid(input).view(batch_size, self.n_classes, -1)
+                target = target.contiguous().view(batch_size, self.n_classes, -1).float()
             else:
                 input = F.softmax(input, dim=1).view(batch_size, self.n_classes, -1)
                 target = self.one_hot_encoder(target).contiguous().view(batch_size, self.n_classes, -1)
@@ -52,6 +58,42 @@ class SoftDiceLoss(nn.Module):
 
         score = torch.sum(2.0 * inter / union)
         score = 1.0 - score / (float(batch_size) * float(self.n_classes))
+
+        return score
+    
+class WeightedDiceLoss(nn.Module):
+    def __init__(self, n_classes, output_cdim, loss_weights):
+        super(SoftDiceLoss, self).__init__()
+        self.one_hot_encoder = One_Hot(n_classes).forward
+        self.n_classes = n_classes
+        self.output_cdim = output_cdim
+        self.loss_weights = loss_weights
+
+    def forward(self, input, target):
+        smooth = 1e-7
+        batch_size = input.size(0)
+        
+        assert(self.output_cdim>1)
+        assert(self.output_cdim == len(self.loss_weights))
+        
+        if self.output_cdim>1:
+            if self.n_classes == 1:
+                input = torch.sigmoid(input).view(batch_size, self.output_cdim, self.n_classes, -1)
+                target = target.contiguous().view(batch_size, self.output_cdim, self.n_classes, -1).float()
+            else:
+                input = F.softmax(input, dim=1).view(batch_size, self.output_cdim, self.n_classes, -1) # TODO Verify if dim = 1 or 2
+                target = self.one_hot_encoder(target).contiguous().view(batch_size, self.output_cdim, self.n_classes, -1)
+                print("Warning : Multiclass in multiple channels not implemented yet")
+                print("Help models/layers/loss")
+        
+        # score = 0.0
+        
+        # for i in range(self.output_cdim):
+        sub_inter = torch.sum(input * target, 1) # [:,i, ...] ?
+        sub_union = torch.sum(input, 1) + torch.sum(target, 1) + smooth
+        score = torch.sum( 2.0 * torch.tensor(self.loss_weights, dtype=torch.float64, device=input.device()) * sub_inter / sub_union )
+
+        # score = 1.0 - score # / (float(batch_size) * float(self.n_classes))
 
         return score
 
