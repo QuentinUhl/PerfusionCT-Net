@@ -63,7 +63,7 @@ class SoftDiceLoss(nn.Module):
     
 class WeightedDiceLoss(nn.Module):
     def __init__(self, n_classes, output_cdim, loss_weights):
-        super(SoftDiceLoss, self).__init__()
+        super(WeightedDiceLoss, self).__init__()
         self.one_hot_encoder = One_Hot(n_classes).forward
         self.n_classes = n_classes
         self.output_cdim = output_cdim
