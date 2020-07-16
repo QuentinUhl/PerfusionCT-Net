@@ -71,13 +71,13 @@ def chan_wise_dice_score(label_gt, label_pred, output_cdim=1):
 
     :param label_gt: [WxH] (2D images)
     :param label_pred: [WxH] (2D images)
-    :param n_class: number of label classes
+    :param output_cdim: number of channels in the output
     :return:
     """
     epsilon = 1.0e-6
     assert len(label_gt) == len(label_pred)
     batchSize = len(label_gt)
-    dice_scores = np.zeros((batchSize, n_class), dtype=np.float32)
+    dice_scores = np.zeros((batchSize, output_cdim), dtype=np.float32)
     for batch_id, (l_gt, l_pred) in enumerate(zip(label_gt, label_pred)):
         for cdim in range(output_cdim):
             img_A = np.array(l_gt[cdim, ...], dtype=np.float32).flatten()
