@@ -93,7 +93,7 @@ class WeightedDiceLoss(nn.Module):
         sub_union = torch.sum(input, (3,2,0)) + torch.sum(target, (3,2,0)) + smooth
         score = torch.sum( 2.0 * torch.tensor(self.loss_weights, device=input.device) * sub_inter / sub_union )
 
-        # score = 1.0 - score # / (float(batch_size) * float(self.n_classes))
+        score = 1.0 - score # / (float(batch_size) * float(self.n_classes))
 
         return score
 

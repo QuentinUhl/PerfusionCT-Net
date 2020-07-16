@@ -131,10 +131,10 @@ def segmentation_stats(prediction, target, output_nc, output_cdim):
             gts.append(gt_)
             preds.append(pred_)
         
-    if n_classes == 1:
-        class_wise_dice = dice_score_list(gts, preds, n_class=2)
-    else:
-        class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
+    # if n_classes == 1:
+    #     class_wise_dice = dice_score_list(gts, preds, n_class=2)
+    # else:
+    class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
         
     chan_wise_dice = chan_wise_dice_score(gts, preds, output_cdim)
     single_class_dice = dice_score_list(gts, preds, n_class = 1)
