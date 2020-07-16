@@ -96,7 +96,7 @@ def segmentation_stats(prediction, target, output_nc, output_cdim):
     if output_cdim>1:
         if n_classes == 1: # uniclass in multiple channels
             pred_lbls = (prediction > 0.5).int().cpu().numpy()
-            n_unique_classes = 1
+            n_unique_classes = 2
         else: # multiclass in multiple channels
             print("Warning : Multiclass in multiple channels not implemented yet")
             pred_lbls = prediction.data.max(2)[1].cpu().numpy()
@@ -105,7 +105,7 @@ def segmentation_stats(prediction, target, output_nc, output_cdim):
     else:
         if n_classes == 1: # uniclass in a single channels
             pred_lbls = (prediction > 0.5)[0].int().cpu().numpy()
-            n_unique_classes = 1
+            n_unique_classes = 2
         else: # multiclass in a single channels
             pred_lbls = prediction.data.max(1)[1].cpu().numpy()
             print("Label Prediction Shape : ", pred_lbls.data.shape)
