@@ -30,7 +30,7 @@ class FeedForwardSegmentation(BaseModel):
         self.output_cdim = opts.output_cdim
 
         # load/define networks
-        self.net = get_network(opts.model_type, n_classes=opts.output_nc,
+        self.net = get_network(opts.model_type, n_classes=opts.output_cdim,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
                                attention_dsample=opts.attention_dsample)
