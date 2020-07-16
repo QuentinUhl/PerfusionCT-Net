@@ -125,24 +125,28 @@ def segmentation_stats(prediction, target, output_nc, output_cdim):
         for gt_, pred_ in zip(gt, pred_lbls):
             gts.append(gt_[0,...])
             preds.append(pred_[0,...])
+            
     else:
         for gt_, pred_ in zip(gt, pred_lbls):
             gts.append(gt_)
             preds.append(pred_)
         
-    iou = segmentation_scores(gts, preds, n_class=n_unique_classes)
     if n_classes == 1:
         class_wise_dice = dice_score_list(gts, preds, n_class=2)
     else:
         class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
+        
+    chan_wise_dice = chan_wise_dice_score(gts, preds, output_cdim)
     single_class_dice = dice_score_list(gts, preds, n_class = 1)
+    
+    iou = segmentation_scores(gts, preds, n_class=n_unique_classes)
     roc_auc_score = roc_auc(gts, preds)
     
     WBCE = Weighted_Binary_Cross_Entropy(gts, preds, n_class=n_unique_classes)
     L1Loss = L1(gts, preds, n_class=n_unique_classes)
     VolumeLoss = VolumeL(gts, preds, n_class=n_unique_classes)
 
-    return iou, class_wise_dice, single_class_dice, roc_auc_score, WBCE, L1Loss, VolumeLoss
+    return iou, class_wise_dice, chan_wise_dice, single_class_dice, roc_auc_score, WBCE, L1Loss, VolumeLoss
 
 
 def classification_scores(gts, preds, labels):

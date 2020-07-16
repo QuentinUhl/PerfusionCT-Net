@@ -66,6 +66,27 @@ def dice_score_list(label_gt, label_pred, n_class=1):
     return np.mean(dice_scores, axis=0)
 
 
+def chan_wise_dice_score(label_gt, label_pred, output_cdim=1):
+    """
+
+    :param label_gt: [WxH] (2D images)
+    :param label_pred: [WxH] (2D images)
+    :param n_class: number of label classes
+    :return:
+    """
+    epsilon = 1.0e-6
+    assert len(label_gt) == len(label_pred)
+    batchSize = len(label_gt)
+    dice_scores = np.zeros((batchSize, n_class), dtype=np.float32)
+    for batch_id, (l_gt, l_pred) in enumerate(zip(label_gt, label_pred)):
+        for cdim in range(output_cdim):
+            img_A = np.array(l_gt[cdim, ...], dtype=np.float32).flatten()
+            img_B = np.array(l_pred[cdim, ...], dtype=np.float32).flatten()
+            score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+            dice_scores[batch_id, cdim] = score
+
+    return np.mean(dice_scores, axis=0)
+
 # TODO : Suppress both of these dice functions below (unused)
 def dice_score(label_gt, label_pred, n_class=1):
     """
