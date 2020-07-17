@@ -114,8 +114,10 @@ class GenevaStrokeDataset_pCT(data.Dataset):
             input = np.squeeze(input, axis=0)
 
             # Make sure there is a channel dimension
-            target = np.expand_dims(target, axis=-1)
-            mask = np.expand_dims(mask, axis=-1)
+            if target.ndim < 4:
+                target = np.expand_dims(target, axis=-1)
+            if mask.ndim < 4:
+                mask = np.expand_dims(mask, axis=-1)
 
             # Apply masks
             input = input * mask
