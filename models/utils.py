@@ -123,8 +123,8 @@ def segmentation_stats(prediction, target, output_nc, output_cdim):
 
     if output_cdim>1:
         for gt_, pred_ in zip(gt, pred_lbls):
-            gts.append(gt_[0,...])
-            preds.append(pred_[0,...])
+            gts.append(gt_)
+            preds.append(pred_)
             
     else:
         for gt_, pred_ in zip(gt, pred_lbls):
