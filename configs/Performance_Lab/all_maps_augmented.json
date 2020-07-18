@@ -31,7 +31,7 @@
     "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/clean_3_inputs_3_masks_data_set.npz"
   },
   "data_opts":{
-    "channels": [0, 1, 2, 3]
+    "channels": [0, 1, 2]
   },
   "augmentation": {
     "gsd_pCT": {
