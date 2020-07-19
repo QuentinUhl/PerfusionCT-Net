@@ -28,7 +28,7 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/smooth_clean_3_inputs_3_masks_data_set.npz"
+    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/smooth_but_lesions_clean_3_inputs_3_masks_data_set.npz"
   },
   "data_opts":{
     "channels": [0, 1, 2]
@@ -53,7 +53,7 @@
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
-      "noise_std": [0.0, 1.0]
+      "noise_std": [0.0, 0.5]
     }
   },
   "model":{
