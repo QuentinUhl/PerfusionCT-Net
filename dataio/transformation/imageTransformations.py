@@ -629,14 +629,13 @@ class StandardizeImage(object):
                 for i in range(len(_input.shape)):
                     if norm_flag[i]:
                         dim_to_reduce += (i,)
-                if norm_flag[idx]:
-                    # subtract the mean intensity value
-                    mean_val = _input.mean(dim=dim_to_reduce)
-                    _input = _input.add(-1.0 * mean_val)
+                # subtract the mean intensity value
+                mean_val = _input.mean(dim=dim_to_reduce)
+                _input = _input.add(-1.0 * mean_val)
 
-                    # scale the intensity values to be unit norm
-                    std_val = _input.std(dim=dim_to_reduce)
-                    _input = _input.div(1.0 * std_val)
+                # scale the intensity values to be unit norm
+                std_val = _input.std(dim=dim_to_reduce)
+                _input = _input.div(1.0 * std_val)
 
             outputs.append(_input)
 
