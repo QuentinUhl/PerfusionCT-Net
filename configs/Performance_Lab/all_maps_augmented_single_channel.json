@@ -31,7 +31,7 @@
     "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/rescaled_data_set.npz"
   },
   "data_opts":{
-    "channels": [0, 1, 2]
+    "channels": [0, 1, 2, 3]
   },
   "augmentation": {
     "gsd_pCT": {
@@ -66,7 +66,7 @@
     "division_factor": 16,
     "input_nc": 4,
     "output_nc": 1,
-    "multi_channel_output": 1,
+    "multi_channel_output": 0,
     "output_cdim": 1,
     "lr_rate": 1e-4,
     "l2_reg_weight": 1e-6,
