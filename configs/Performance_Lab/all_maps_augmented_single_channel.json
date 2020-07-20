@@ -75,8 +75,8 @@
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "all_maps_augmented_single_channel_output",
-    "criterion": "weighted_dice_loss",
-    "loss_weights": [0.8, 0.1, 0.1]
+    "criterion": "dice_loss",
+    "loss_weights": []
   }
 }
 
