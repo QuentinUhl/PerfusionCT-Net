@@ -83,6 +83,15 @@ class SUNETx5(nn.Module):
         pred = self.softmax(pred)
 
         return pred
+    
+    @staticmethod
+    def apply_argmax_softmax(pred, dim=1):
+        if dim is None:
+            log_p = F.sigmoid(pred)
+        else:
+            log_p = F.softmax(pred, dim=dim)
+
+        return log_p
 
 class DualRes(nn.Module):
     def __init__(self, num_ch, ndims=3, dropout_rate=0.0, dropout_prediction=False):
