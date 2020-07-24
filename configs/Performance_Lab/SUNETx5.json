@@ -31,7 +31,7 @@
     "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/clean_smooth_data_set.npz"
   },
   "data_opts":{
-    "channels": [0, 1, 2, 3]
+    "channels": [0]
   },
   "augmentation": {
     "gsd_pCT": {
@@ -64,7 +64,7 @@
     "tensor_dim": "3D",
     "optim": "adam",
     "division_factor": 16,
-    "input_nc": 4,
+    "input_nc": 1,
     "output_nc": 1,
     "multi_channel_output": 0,
     "output_cdim": 1,
