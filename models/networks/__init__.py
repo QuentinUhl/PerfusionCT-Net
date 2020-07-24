@@ -4,6 +4,7 @@ from .unet_nonlocal_2D import *
 from .unet_nonlocal_3D import *
 from .unet_grid_attention_3D import *
 from .unet_pCT_multi_att_dsv_3D import *
+from .SUNETx5_3D import *
 
 
 def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D',
@@ -32,6 +33,10 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       feature_scale=feature_scale,
                       attention_dsample=attention_dsample,
                       is_deconv=False)
+    elif name in ['SUNETx5']:
+        # (self, in_ch=5, out_ch=2, nfilts=32, ndims=3, dropout_rate=0.2)
+        model = model(in_ch=in_channels,
+                      out_ch=n_classes)
     else:
         raise 'Model {} not available'.format(name)
 
@@ -43,5 +48,6 @@ def _get_model_instance(name, tensor_dim):
         'unet':{'2D': unet_2D, '3D': unet_3D},
         'unet_nonlocal':{'2D': unet_nonlocal_2D, '3D': unet_nonlocal_3D},
         'unet_grid_gating': {'3D': unet_grid_attention_3D},
-        'unet_pct_multi_att_dsv': {'3D': unet_pCT_multi_att_dsv_3D}
+        'unet_pct_multi_att_dsv': {'3D': unet_pCT_multi_att_dsv_3D},
+        'SUNETx5': {'3D': SUNETx5}
     }[name][tensor_dim]
