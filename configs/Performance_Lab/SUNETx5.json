@@ -62,7 +62,7 @@
     "which_epoch": -1,
     "model_type": "SUNETx5",
     "tensor_dim": "3D",
-    "optim": "adam",
+    "optim": "sgd",
     "division_factor": 16,
     "input_nc": 1,
     "output_nc": 1,
