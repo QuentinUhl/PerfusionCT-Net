@@ -76,7 +76,8 @@
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "SUNET_v1",
     "criterion": "dice_loss",
-    "loss_weights": []
+    "loss_weights": [],
+    "path_pre_trained_model": "./models/isles18ensemble.pth"
   }
 }
 
