@@ -77,7 +77,7 @@
     "experiment_name": "SUNET_v1",
     "criterion": "dice_loss",
     "loss_weights": [],
-    "path_pre_trained_model": "./models/isles18ensemble.pth"
+    "path_pre_trained_model": "./models/isles18ensemble.pt"
   }
 }
 
