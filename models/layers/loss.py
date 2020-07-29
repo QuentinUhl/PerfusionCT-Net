@@ -46,7 +46,7 @@ class SoftDiceLoss(nn.Module):
                 print("Warning : Multiclass in multiple channels not implemented yet")
                 print("Help models/layers/loss")
         else:
-            if self.n_classes == 1:
+            if self.n_classes <= 2:
                 input = torch.sigmoid(input).view(batch_size, self.n_classes, -1)
                 target = target.contiguous().view(batch_size, self.n_classes, -1).float()
             else:

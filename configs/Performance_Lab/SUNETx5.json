@@ -68,16 +68,15 @@
     "output_nc": 1,
     "multi_channel_output": 0,
     "output_cdim": 1,
-    "lr_rate": 1e-2,
+    "lr_rate": 1e-3,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "SUNET_v1",
-    "criterion": "dice_loss",
-    "loss_weights": [],
-    "path_pre_trained_model": "./models/isles18ensemble.pt"
+    "criterion": "classic_bce",
+    "loss_weights": []
   }
 }
 
