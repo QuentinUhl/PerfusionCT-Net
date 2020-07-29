@@ -29,8 +29,8 @@ class ClassicBCE(nn.Module):
         super(ClassicBCE, self).__init__()
     def forward(self, input, target):
         batch_size = input.size(0)
-        input = torch.sigmoid(input).view(batch_size, self.output_cdim, -1)
-        target = target.contiguous().view(batch_size, self.output_cdim, -1).float()
+        input = torch.sigmoid(input).view(batch_size, 1, -1)
+        target = target.contiguous().view(batch_size, 1, -1).float()
         return nn.BCELoss(input, target)
 
 class SoftDiceLoss(nn.Module):
