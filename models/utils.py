@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 from torch.nn import CrossEntropyLoss
-from utils.metrics import ClassicBCE, segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL, chan_wise_dice_score
+from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL, chan_wise_dice_score
 from sklearn import metrics
 from .layers.loss import *
 
