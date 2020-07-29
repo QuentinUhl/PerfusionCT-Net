@@ -24,6 +24,11 @@ def cross_entropy_3D(input, target, weight=None, size_average=True):
         loss /= float(target.numel())
     return loss
 
+class ClassicBCE(nn.Module):
+    def __init__(self):
+        super(ClassicBCE, self).__init__()
+    def forward(self, input, target):
+        return nn.BCELoss(input, target.float())
 
 class SoftDiceLoss(nn.Module):
     def __init__(self, n_classes, output_cdim):

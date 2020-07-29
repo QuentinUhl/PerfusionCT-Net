@@ -7,10 +7,9 @@ import numpy as np
 import torch
 import torch.optim as optim
 from torch.nn import CrossEntropyLoss
-from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL, chan_wise_dice_score
+from utils.metrics import ClassicBCE, segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL, chan_wise_dice_score
 from sklearn import metrics
 from .layers.loss import *
-import torch.nn as nn
 
 def get_optimizer(option, params):
     opt_alg = 'sgd' if not hasattr(option, 'optim') else option.optim
@@ -57,7 +56,7 @@ def get_criterion(opts):
     elif opts.criterion == 'weighted_dice_loss':
         criterion = WeightedDiceLoss(opts.output_nc, opts.output_cdim, opts.loss_weights)
     elif opts.criterion == 'classic_bce':
-        criterion = nn.BCELoss()
+        criterion = ClassicBCE()
 
     return criterion
 
