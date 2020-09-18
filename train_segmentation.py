@@ -80,7 +80,7 @@ def train(arguments):
 
             # Error visualisation
             errors = model.get_current_errors()
-                stats = model.get_segmentation_stats()
+            stats = model.get_segmentation_stats()
             error_logger.update({**errors, **stats}, split='train')
 
             ids = train_dataset.get_ids(indices)
