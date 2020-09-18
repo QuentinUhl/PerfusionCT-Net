@@ -80,7 +80,8 @@ def train(arguments):
 
             # Error visualisation
             errors = model.get_current_errors()
-            error_logger.update(errors, split='train')
+                stats = model.get_segmentation_stats()
+            error_logger.update({**errors, **stats}, split='train')
 
             ids = train_dataset.get_ids(indices)
             volumes = model.get_current_volumes()
@@ -88,27 +89,25 @@ def train(arguments):
             train_volumes.append(volumes)
 
         # Validation Iterations
-        for loader, split, dataset in zip([train_loader, valid_loader], ['train', 'validation'], [train_dataset, valid_dataset]):
-            for epoch_iter, (images, labels, indices) in tqdm(enumerate(loader, 1), total=len(loader)):
-                ids = dataset.get_ids(indices)
+        for epoch_iter, (images, labels, indices) in tqdm(enumerate(valid_loader, 1), total=len(valid_loader)):
+            ids = valid_dataset.get_ids(indices)
 
-                # Make a forward pass with the model
-                model.set_input(images, labels)
-                model.validate()
+            # Make a forward pass with the model
+            model.set_input(images, labels)
+            model.validate()
 
-                # Error visualisation
-                errors = model.get_current_errors()
-                stats = model.get_segmentation_stats()
-                error_logger.update({**errors, **stats}, split=split)
+            # Error visualisation
+            errors = model.get_current_errors()
+            stats = model.get_segmentation_stats()
+            error_logger.update({**errors, **stats}, split='validation')
 
-                if split == 'validation':  # do not look at testing
-                    # Visualise predictions
-                    volumes = model.get_current_volumes()
-                    visualizer.display_current_volumes(volumes, ids, split, epoch)
-                    validation_volumes.append(volumes)
+            # Visualise predictions
+            volumes = model.get_current_volumes()
+            visualizer.display_current_volumes(volumes, ids, 'validation', epoch)
+            validation_volumes.append(volumes)
 
-                    # Track validation loss values
-                    early_stopper.update({**errors, **stats})
+            # Track validation loss values
+            early_stopper.update({**errors, **stats})
 
         if epoch == train_opts.n_epochs-1:
             for loader, split, dataset in zip([test_loader], ['test'], [test_dataset]):

@@ -178,6 +178,7 @@ class Visualiser():
                     title=self.name + ' {} over time'.format(key),
                     xlabel='Epochs',
                     ylabel=key,
+                    marker='+',
                     win=self.error_wins[key]
             ))
         else:
