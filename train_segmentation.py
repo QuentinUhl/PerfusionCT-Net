@@ -110,13 +110,27 @@ def train(arguments):
                     # Track validation loss values
                     early_stopper.update({**errors, **stats})
 
+        if epoch == train_opts.n_epochs-1:
+            for loader, split, dataset in zip([test_loader], ['test'], [test_dataset]):
+                for epoch_iter, (images, labels, indices) in tqdm(enumerate(loader, 1), total=len(loader)):
+                    ids = dataset.get_ids(indices)
+    
+                    # Make a forward pass with the model
+                    model.set_input(images, labels)
+                    model.validate()
+    
+                    # Error visualisation
+                    errors = model.get_current_errors()
+                    stats = model.get_segmentation_stats()
+                    error_logger.update({**errors, **stats}, split=split)
+
         # Update the plots
         for split in ['train', 'validation', 'test']:
             visualizer.plot_current_errors(epoch, error_logger.get_errors(split), split_name=split)
             visualizer.print_current_errors(epoch, error_logger.get_errors(split), split_name=split)
         visualizer.save_plots(epoch, save_frequency=5)
         error_logger.reset()
-
+        
         if early_stopper.interrogate(epoch):
             break
 
