@@ -168,7 +168,7 @@ class Visualiser():
                 win=self.error_wins[key_s]))
 
     def plot_line(self, x, y, key, split_name):
-        if key not in self.error_plots:
+        if split_name == 'test':
             self.error_wins[key] = self.display_id * 3 + len(self.error_wins)
             self.error_plots[key] = self.vis.line(
                 X=np.array([x, x]),
@@ -179,11 +179,29 @@ class Visualiser():
                     xlabel='Epochs',
                     ylabel=key,
                     markers=True,
-                    markersymbol='dot',
+                    markersymbol='+',
+                    markersize = 7,
                     win=self.error_wins[key]
             ))
         else:
-            self.vis.line(X=np.array([x]), Y=np.array([y]), win=self.error_plots[key], name=split_name, update='append')
+            if key not in self.error_plots:
+                self.error_wins[key] = self.display_id * 3 + len(self.error_wins)
+                self.error_plots[key] = self.vis.line(
+                    X=np.array([x, x]),
+                    Y=np.array([y, y]),
+                    opts=dict(
+                        legend=[split_name],
+                        title=self.name + ' {} over time'.format(key),
+                        xlabel='Epochs',
+                        ylabel=key,
+                        win=self.error_wins[key]
+                ))
+            else:
+                self.vis.line(X=np.array([x]), 
+                              Y=np.array([y]), 
+                              win=self.error_plots[key], 
+                              name=split_name, 
+                              update='append')
     # errors: dictionary of error labels and values
     def plot_current_errors(self, epoch, errors, split_name, counter_ratio=0.0, **kwargs):
         if self.display_id > 0:
