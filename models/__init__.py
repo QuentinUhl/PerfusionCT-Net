@@ -39,6 +39,9 @@ class ModelOpts:
         self.model_type = opts.model_type
         self.input_nc = opts.input_nc
         self.output_nc = opts.output_nc
+        self.multi_channel_output = opts.multi_channel_output if hasattr(opts, 'multi_channel_output')  else 0
+        self.output_cdim = opts.output_cdim if hasattr(opts, 'output_cdim')  else 1
+        self.loss_weights = opts.loss_weights if hasattr(opts, 'loss_weights')  else []
         self.continue_train = opts.continue_train
         self.which_epoch = opts.which_epoch
 

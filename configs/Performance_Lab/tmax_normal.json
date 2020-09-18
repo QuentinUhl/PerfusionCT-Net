@@ -1,7 +1,7 @@
 {
   "training":{
     "arch_type": "gsd_pCT",
-    "n_epochs": 50,
+    "n_epochs": 300,
     "lr_policy": "step",
     "lr_decay_iters": 250,
     "batchSize": 2,
@@ -14,9 +14,9 @@
     "verbose": "True"
   },
   "visualisation":{
-    "display_port": 8097,
-    "save_epoch_freq": 1,
+    "display_port": 9000,
     "no_html": true,
+    "save_epoch_freq": 10,
     "display_winsize": 256,
     "display_id": 1,
     "display_single_pane_ncols": 0
@@ -28,24 +28,32 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "D:/GitHub/StrokeLesionPredict-BIO503/data/working_data/pct_unet_all_2016_2017/rescaled_data_set.npz"
+    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/3_masks_clean_smooth_data_set.npz"
   },
   "data_opts":{
     "channels": [0]
   },
   "augmentation": {
     "gsd_pCT": {
-      "rotate": 7.5,
-      "scale_val": [0.8, 1.2],
-      "max_deform": [15, 15, 5],
-      "shift_val": [0, 5],
-      "elastic_control_points": 7,
-      "random_flip_prob": 0.5,
-      "random_affine_prob": 0.5,
-      "random_elastic_prob": 0.5,
-      "random_noise_prob": 0.5,
       "scale_size": [96,96,96,1],
-      "prudent": "False"
+      "prudent": 0,
+      
+      "random_flip_prob": 0.0,
+      "flip_axis": 0,
+      "flip_prob_per_axis": 1.0,
+      
+      "random_elastic_prob": 0.0,
+      "max_deform": [0, 0, 0],
+      "elastic_control_points": [7, 7, 7],
+      
+      "random_affine_prob": 0.0,
+      "scale_val": [1,1],
+      "rotate": 0,
+      "shift_val": 0.0,
+      
+      "random_noise_prob": 0.0,
+      "noise_mean" : 0.0,
+      "noise_std": [0.0, 0.0]
     }
   },
   "model":{
@@ -56,14 +64,15 @@
     "tensor_dim": "3D",
     "division_factor": 16,
     "input_nc": 1,
-    "output_nc": 2,
+    "output_nc": 3,
+    "output_cdim": 3,
     "lr_rate": 1e-4,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "early_stopping",
+    "experiment_name": "tmax_normal",
     "criterion": "dice_loss"
   }
 }

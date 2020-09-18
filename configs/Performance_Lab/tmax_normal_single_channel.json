@@ -1,22 +1,22 @@
 {
   "training":{
     "arch_type": "gsd_pCT",
-    "n_epochs": 50,
+    "n_epochs": 700,
     "lr_policy": "step",
     "lr_decay_iters": 250,
     "batchSize": 2,
     "preloadData": true,
     "early_stopping":{
-      "patience": 10,
-      "min_epochs": 15,
+      "patience": 60,
+      "min_epochs": 150,
       "monitor": "Seg_Loss"
     },
     "verbose": "True"
   },
   "visualisation":{
-    "display_port": 8097,
-    "save_epoch_freq": 1,
+    "display_port": 9000,
     "no_html": true,
+    "save_epoch_freq": 10,
     "display_winsize": 256,
     "display_id": 1,
     "display_single_pane_ncols": 0
@@ -28,24 +28,32 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "D:/GitHub/StrokeLesionPredict-BIO503/data/working_data/pct_unet_all_2016_2017/rescaled_data_set.npz"
+    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/rescaled_data_set.npz"
   },
   "data_opts":{
     "channels": [0]
   },
   "augmentation": {
     "gsd_pCT": {
-      "rotate": 7.5,
-      "scale_val": [0.8, 1.2],
-      "max_deform": [15, 15, 5],
-      "shift_val": [0, 5],
-      "elastic_control_points": 7,
-      "random_flip_prob": 0.5,
-      "random_affine_prob": 0.5,
-      "random_elastic_prob": 0.5,
-      "random_noise_prob": 0.5,
       "scale_size": [96,96,96,1],
-      "prudent": "False"
+      "prudent": 0,
+      
+      "random_flip_prob": 0.0,
+      "flip_axis": 0,
+      "flip_prob_per_axis": 1.0,
+      
+      "random_elastic_prob": 0.0,
+      "max_deform": [0, 0, 0],
+      "elastic_control_points": [7, 7, 7],
+      
+      "random_affine_prob": 0.0,
+      "scale_val": [1,1],
+      "rotate": 0,
+      "shift_val": 0.0,
+      
+      "random_noise_prob": 0.0,
+      "noise_mean" : 0.0,
+      "noise_std": [0.0, 0.0]
     }
   },
   "model":{
@@ -54,17 +62,21 @@
     "which_epoch": -1,
     "model_type": "unet_pct_multi_att_dsv",
     "tensor_dim": "3D",
+    "optim": "adam",
     "division_factor": 16,
     "input_nc": 1,
-    "output_nc": 2,
+    "output_nc": 1,
+    "multi_channel_output": 0,
+    "output_cdim": 1,
     "lr_rate": 1e-4,
     "l2_reg_weight": 1e-6,
     "feature_scale": 4,
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "early_stopping",
-    "criterion": "dice_loss"
+    "experiment_name": "all_maps_normal_single_channel_output_seed_42_new",
+    "criterion": "dice_loss",
+    "loss_weights": []
   }
 }
 

@@ -38,29 +38,56 @@ def segmentation_scores(label_trues, label_preds, n_class):
             'mean_iou': mean_iu}
 
 
-def dice_score_list(label_gt, label_pred, n_class):
+def dice_score_list(label_gt, label_pred, n_class=1):
     """
 
     :param label_gt: [WxH] (2D images)
     :param label_pred: [WxH] (2D images)
     :param n_class: number of label classes
-    :return:
+    :return: label wise dice
     """
     epsilon = 1.0e-6
     assert len(label_gt) == len(label_pred)
     batchSize = len(label_gt)
     dice_scores = np.zeros((batchSize, n_class), dtype=np.float32)
     for batch_id, (l_gt, l_pred) in enumerate(zip(label_gt, label_pred)):
-        for class_id in range(n_class):
-            img_A = np.array(l_gt == class_id, dtype=np.float32).flatten()
-            img_B = np.array(l_pred == class_id, dtype=np.float32).flatten()
+        if n_class == 1:
+            img_A = np.array(l_gt, dtype=np.float32).flatten()
+            img_B = np.array(l_pred, dtype=np.float32).flatten()
             score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
-            dice_scores[batch_id, class_id] = score
+            dice_scores[batch_id, 0] = score
+        else:
+            for class_id in range(n_class):
+                img_A = np.array(l_gt == class_id, dtype=np.float32).flatten()
+                img_B = np.array(l_pred == class_id, dtype=np.float32).flatten()
+                score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+                dice_scores[batch_id, class_id] = score
 
     return np.mean(dice_scores, axis=0)
 
 
-def dice_score(label_gt, label_pred, n_class):
+def chan_wise_dice_score(label_gt, label_pred, output_cdim=1):
+    """
+    :param label_gt: [WxH] (2D images)
+    :param label_pred: [WxH] (2D images)
+    :param output_cdim: number of channels in the output
+    :return: channel wise dice
+    """
+    epsilon = 1.0e-6
+    assert len(label_gt) == len(label_pred)
+    batchSize = len(label_gt)
+    dice_scores = np.zeros((batchSize, output_cdim), dtype=np.float32)
+    for batch_id, (l_gt, l_pred) in enumerate(zip(label_gt, label_pred)):
+        for cdim in range(output_cdim):
+            img_A = np.array(l_gt[cdim, ...], dtype=np.float32).flatten()
+            img_B = np.array(l_pred[cdim, ...], dtype=np.float32).flatten()
+            score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+            dice_scores[batch_id, cdim] = score
+
+    return np.mean(dice_scores, axis=0)
+
+# TODO : Suppress both of these dice functions below (unused)
+def dice_score(label_gt, label_pred, n_class=1):
     """
 
     :param label_gt:
@@ -72,13 +99,29 @@ def dice_score(label_gt, label_pred, n_class):
     epsilon = 1.0e-6
     assert np.all(label_gt.shape == label_pred.shape)
     dice_scores = np.zeros(n_class, dtype=np.float32)
-    for class_id in range(n_class):
-        img_A = np.array(label_gt == class_id, dtype=np.float32).flatten()
-        img_B = np.array(label_pred == class_id, dtype=np.float32).flatten()
+    if n_class==1:
+        img_A = np.array(label_gt , dtype=np.float32).flatten()
+        img_B = np.array(label_pred, dtype=np.float32).flatten()
         score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
-        dice_scores[class_id] = score
+        dice_scores[0] = score
+    else:
+        for class_id in range(n_class):
+            img_A = np.array(label_gt == class_id, dtype=np.float32).flatten()
+            img_B = np.array(label_pred == class_id, dtype=np.float32).flatten()
+            score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
+            dice_scores[class_id] = score
 
     return dice_scores
+
+
+def single_class_dice_score(target, input):
+    smooth = 1e-7
+    iflat = np.array(input).flatten()
+    tflat = np.array(target).flatten()
+    intersection = (iflat * tflat).sum()
+
+    return ((2. * intersection) /
+            (iflat.sum() + tflat.sum() + smooth))
 
 
 def roc_auc(label_gt, label_pred):
@@ -88,16 +131,6 @@ def roc_auc(label_gt, label_pred):
     fpr, tpr, roc_thresholds = roc_curve(y_true, y_scores)
     roc_auc_score = auc(fpr, tpr)
     return roc_auc_score
-
-
-def single_class_dice_score(target, input):
-    smooth = 1e-7
-    iflat = np.array(input).flatten()
-    tflat = np.array(target).flatten()
-    intersection = (iflat * tflat).sum()
-
-    return ((2. * intersection + smooth) /
-            (iflat.sum() + tflat.sum() + smooth))
 
 
 def precision_and_recall(label_gt, label_pred, n_class):
@@ -165,3 +198,75 @@ def distance_metric(seg_A, seg_B, dx, k):
     mean_md = np.mean(table_md) if table_md else None
     mean_hd = np.mean(table_hd) if table_hd else None
     return mean_md, mean_hd
+
+def Weighted_Binary_Cross_Entropy(gts, preds, n_class):
+    """
+
+    :param label_gt:
+    :param label_pred:
+    :param n_class:
+    :return:
+    """
+    label_gt = gts[0]
+    label_pred = preds[0]
+
+    epsilon = 1.0e-6
+    assert np.all(label_gt.shape == label_pred.shape)
+    WBCE_score = 0.0
+    
+    img_gt = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_pred = np.array(label_pred == 1, dtype=np.float32).flatten()
+    
+    N_plus = np.sum(img_gt)
+    N_minus = np.sum(1-img_gt)
+    R0 = N_plus / ( N_minus + N_plus )
+    R1 = 1.0 - R0
+    N = N_plus + N_minus
+    img_pred_prob = epsilon+(1.0-2*epsilon)*img_pred
+    WBCE_score = -(1.0/N) * np.sum(R0*img_gt*np.log(img_pred_prob) + R1*(1-img_gt)*np.log(1.0-img_pred_prob))
+
+    return WBCE_score
+
+def L1(gts, preds, n_class):
+    """
+
+    :param label_gt:
+    :param label_pred:
+    :param n_class:
+    :return:
+    """
+    label_gt = gts[0]
+    label_pred = preds[0]
+    
+    assert np.all(label_gt.shape == label_pred.shape)
+    L1_score = 0.0
+    
+    img_gt = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_pred = np.array(label_pred == 1, dtype=np.float32).flatten()
+    L1_score = np.mean(np.abs(img_gt - img_pred))
+    
+    return L1_score
+
+def VolumeL(gts, preds, n_class):
+    """
+
+    :param label_gt:
+    :param label_pred:
+    :param n_class:
+    :return:
+    """
+    label_gt = gts[0]
+    label_pred = preds[0]
+    
+    assert np.all(label_gt.shape == label_pred.shape)
+    vol_score = 0.0
+    
+    img_gt = np.array(label_gt == 1, dtype=np.float32).flatten()
+    img_pred = np.array(label_pred == 1, dtype=np.float32).flatten()
+    N_plus = np.sum(img_gt)
+    
+    if N_plus!=0:
+        vol_score = np.abs(np.sum(img_gt - img_pred)/N_plus)
+    else:
+        vol_score = np.abs(np.sum(img_gt - img_pred))
+    return vol_score

@@ -68,10 +68,14 @@ class GenevaStrokeDataset_pCT(data.Dataset):
                 self.raw_labels = np.load(dataset_path, allow_pickle=True)['lesion_GT'][self.split_indices].astype(np.uint8)
 
             # Make sure there is a channel dimension
-            self.raw_labels = np.expand_dims(self.raw_labels, axis=-1)
+            if self.raw_labels.ndim < 5:
+                self.raw_labels = np.expand_dims(self.raw_labels, axis=-1)
             self.raw_masks = np.expand_dims(self.raw_masks, axis=-1)
             if self.raw_images.ndim < 5:
                 self.raw_images = np.expand_dims(self.raw_images, axis=-1)
+            print("Image dimension : ", self.raw_images.shape)
+            print("Label dimension : ", self.raw_labels.shape)
+            print("Mask dimension : ", self.raw_masks.shape)
 
             # Apply masks
             self.raw_images = self.raw_images * self.raw_masks
@@ -83,6 +87,11 @@ class GenevaStrokeDataset_pCT(data.Dataset):
         return [self.ids[index] for index in indices]
 
     def __getitem__(self, index):
+        '''
+        Return sample at index
+        :param index: int
+        :return: sample (x, y, z, c)
+        '''
         # update the seed to avoid workers sample the same augmentation parameters
         np.random.seed(datetime.datetime.now().second + datetime.datetime.now().microsecond)
 
@@ -97,14 +106,23 @@ class GenevaStrokeDataset_pCT(data.Dataset):
                 target = np.load(self.dataset_path, allow_pickle=True)['lesion_GT'][split_specific_index].astype(np.uint8)
             mask = np.load(self.dataset_path, allow_pickle=True)['brain_masks'][split_specific_index]
 
-            # Make sure there is a channel dimension
-            target = np.expand_dims(target, axis=-1)
-            mask = np.expand_dims(mask, axis=-1)
+            # Remove first dimension
+            # print(input.shape)
             if input.ndim < 5:
                 input = np.expand_dims(input, axis=-1)
+            input = np.swapaxes(input,0,4)
+            input = np.squeeze(input, axis=0)
+
+            # Make sure there is a channel dimension
+            if target.ndim < 4:
+                target = np.expand_dims(target, axis=-1)
+            if mask.ndim < 4:
+                mask = np.expand_dims(mask, axis=-1)
 
             # Apply masks
             input = input * mask
+            
+            assert target.shape[0:2] == input.shape[0:2]
 
         else:
             # With preload, it is already only the images from a certain split that are loaded

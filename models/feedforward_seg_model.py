@@ -1,4 +1,5 @@
 import os
+import torch
 from collections import OrderedDict
 from torch.autograd import Variable
 import utils.utils as util
@@ -19,18 +20,17 @@ class FeedForwardSegmentation(BaseModel):
         BaseModel.initialize(self, opts, **kwargs)
         self.isTrain = opts.isTrain
 
-        # initialize state
-        self.best_validation_loss = None
-        self.best_epoch = 0
-        self.is_improving = False
 
         # define network input and output pars
         self.input = None
         self.target = None
         self.tensor_dim = opts.tensor_dim
+        self.output_nc = opts.output_nc
+        self.multi_channel_output = opts.multi_channel_output
+        self.output_cdim = opts.output_cdim
 
         # load/define networks
-        self.net = get_network(opts.model_type, n_classes=opts.output_nc,
+        self.net = get_network(opts.model_type, n_classes=opts.output_cdim*opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
                                attention_dsample=opts.attention_dsample)
@@ -88,12 +88,22 @@ class FeedForwardSegmentation(BaseModel):
             with torch.no_grad():
                 self.prediction = self.net(Variable(self.input))
                 # Apply a softmax and return a segmentation map
-                if self.prediction.shape[1] > 1: # multiclass
-                    self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1)
-                    self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
+                if self.multi_channel_output: 
+                    if self.output_nc > 1: # multiclass in multiple channels
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1) # TODO Verify dim = 1 or 2
+                        self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
+                        print("Warning : Multiclass in multiple channels not implemented yet")
+                        print("Help models/feedforward_seg_model")
+                    else: # uniclass in multiple channels
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
+                        self.pred_seg = (self.logits > 0.5).float()
                 else:
-                    self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
-                    self.pred_seg = (self.logits > 0.5).float()
+                    if self.output_nc > 1: # multiclass in a single channel
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=1)
+                        self.pred_seg = self.logits.data.max(1)[1].unsqueeze(1) # give each voxel the class index with max proba
+                    else: # uniclass in a single channel
+                        self.logits = self.net.apply_argmax_softmax(self.prediction, dim=None)
+                        self.pred_seg = (self.logits > 0.5).float()
 
     def backward(self):
         self.loss_S = self.criterion(self.prediction, self.target)
@@ -129,28 +139,19 @@ class FeedForwardSegmentation(BaseModel):
         self.loss_S = self.criterion(self.prediction, self.target)
 
     def get_segmentation_stats(self):
-        self.seg_scores, self.class_dice_score, self.overall_dice_score, self.roc_auc_score = segmentation_stats(self.prediction, self.target)
+        self.seg_scores, self.class_dice_score, self.chan_dice_score, self.overall_dice_score, self.roc_auc_score, self.WBCE_score, self.L1_score, self.Volume_score = segmentation_stats(self.prediction, self.target, self.output_nc, self.output_cdim)
         seg_stats = [('Overall_Acc', self.seg_scores['overall_acc']), ('Mean_IOU', self.seg_scores['mean_iou']),
-                     ('Overall_Dice', self.overall_dice_score), ('ROC_AUC', self.roc_auc_score)]
+                     ('Overall_Dice', self.overall_dice_score), ('ROC_AUC', self.roc_auc_score),
+                     ('WBCE_score', self.WBCE_score), ('L1_score', self.L1_score), ('Volume_score', self.Volume_score)]
         for class_id in range(self.class_dice_score.size):
             seg_stats.append(('Class_{}'.format(class_id), self.class_dice_score[class_id]))
+        for chan_id in range(self.chan_dice_score.size):
+            seg_stats.append(('Channel_{}'.format(chan_id), self.chan_dice_score[chan_id]))
         return OrderedDict(seg_stats)
 
     def get_current_errors(self):
         return OrderedDict([('Seg_Loss', self.loss_S.data.item())
                             ])
-
-    def update_validation_state(self, epoch):
-        '''
-        Update model state with best state
-        :return: is_improving (boolean, True if model is improving), best validation loss and associated epoch
-        '''
-        self.is_improving = False
-        if self.best_validation_loss is None or self.loss_S.data.item() < self.best_validation_loss:
-            self.best_validation_loss = self.loss_S.data.item()
-            self.best_epoch = epoch
-            self.is_improving = True
-        return self.is_improving, self.best_validation_loss, self.best_epoch
 
     def get_current_visuals(self):
         inp_img = util.tensor2im(self.input, 'img')

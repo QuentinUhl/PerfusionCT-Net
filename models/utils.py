@@ -4,9 +4,10 @@ Misc Utility functions
 
 import os
 import numpy as np
+import torch
 import torch.optim as optim
 from torch.nn import CrossEntropyLoss
-from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc
+from utils.metrics import segmentation_scores, dice_score_list, single_class_dice_score, roc_auc, Weighted_Binary_Cross_Entropy, L1, VolumeL, chan_wise_dice_score
 from sklearn import metrics
 from .layers.loss import *
 
@@ -35,11 +36,26 @@ def get_criterion(opts):
         elif 'classifier' in opts.type:
             criterion = CrossEntropyLoss()
     elif opts.criterion == 'dice_loss':
-        criterion = SoftDiceLoss(opts.output_nc)
+        criterion = SoftDiceLoss(opts.output_nc, opts.output_cdim)
     elif opts.criterion == 'dice_loss_specific_classes_only':
         criterion = CustomSoftDiceLoss(opts.output_nc, class_ids=[0, 2])
     elif opts.criterion == 'focal_tversky_loss':
         criterion = FocalTverskyLoss()
+    elif opts.criterion == 'combined_loss':
+        criterion = CombinedLoss(opts.output_nc)
+    
+    elif opts.criterion == 'WBCE_Loss':
+        criterion = WBCELoss(opts.output_nc)
+    elif opts.criterion == 'L1_Loss':
+        criterion = L1Loss(opts.output_nc)
+    elif opts.criterion == 'DiceinCombinedLoss':
+        criterion = DiceinCombinedLoss(opts.output_nc)
+    elif opts.criterion == 'Volume_Loss':
+        criterion = VolumeLoss(opts.output_nc)
+        
+    elif opts.criterion == 'weighted_dice_loss':
+        criterion = WeightedDiceLoss(opts.output_nc, opts.output_cdim, opts.loss_weights)
+        
 
     return criterion
 
@@ -75,27 +91,62 @@ def adjust_learning_rate(optimizer, init_lr, epoch):
         param_group['lr'] = lr
 
 
-def segmentation_stats(prediction, target):
-    n_classes = prediction.size(1)
-    if n_classes == 1:
-        pred_lbls = (torch.sigmoid(prediction) > 0.5)[0].int().cpu().numpy()
-        n_unique_classes = n_classes + 1
+def segmentation_stats(prediction, target, output_nc, output_cdim):
+    n_classes = output_nc
+    if output_cdim>1:
+        if n_classes == 1: # uniclass in multiple channels
+            pred_lbls = (prediction > 0.5).int().cpu().numpy()
+            n_unique_classes = 2
+        else: # multiclass in multiple channels
+            print("Warning : Multiclass in multiple channels not implemented yet")
+            pred_lbls = prediction.data.max(2)[1].cpu().numpy()
+            print("Label Prediction Shape : ", pred_lbls.data.shape)
+            n_unique_classes = n_classes
     else:
-        pred_lbls = prediction.data.max(1)[1].cpu().numpy()
-        n_unique_classes = n_classes
+        if n_classes == 1: # uniclass in a single channels
+            pred_lbls = (prediction > 0.5)[0].int().cpu().numpy()
+            n_unique_classes = 2
+        else: # multiclass in a single channels
+            pred_lbls = prediction.data.max(1)[1].cpu().numpy()
+            print("Label Prediction Shape : ", pred_lbls.data.shape)
+            n_unique_classes = n_classes
 
-    gt = np.squeeze(target.data.cpu().numpy(), axis=1)
+    # print("Shape of prediction :", pred_lbls.shape)
+    # print("Shape of target :", target.data.cpu().numpy().shape)
+    
+    if output_cdim>1:
+        gt = target.data.cpu().numpy()
+    else:
+        gt = np.squeeze(target.data.cpu().numpy(), axis=1)
+    
     gts, preds = [], []
-    for gt_, pred_ in zip(gt, pred_lbls):
-        gts.append(gt_)
-        preds.append(pred_)
 
-    iou = segmentation_scores(gts, preds, n_class=n_unique_classes)
+    if output_cdim>1:
+        for gt_, pred_ in zip(gt, pred_lbls):
+            gts.append(gt_)
+            preds.append(pred_)
+            
+    else:
+        for gt_, pred_ in zip(gt, pred_lbls):
+            gts.append(gt_)
+            preds.append(pred_)
+        
+    # if n_classes == 1:
+    #     class_wise_dice = dice_score_list(gts, preds, n_class=2)
+    # else:
     class_wise_dice = dice_score_list(gts, preds, n_class=n_unique_classes)
-    single_class_dice = single_class_dice_score(gts, preds)
+        
+    chan_wise_dice = chan_wise_dice_score(gts, preds, output_cdim)
+    single_class_dice = dice_score_list(gts, preds, n_class = 1)
+    
+    iou = segmentation_scores(gts, preds, n_class=n_unique_classes)
     roc_auc_score = roc_auc(gts, preds)
+    
+    WBCE = Weighted_Binary_Cross_Entropy(gts, preds, n_class=n_unique_classes)
+    L1Loss = L1(gts, preds, n_class=n_unique_classes)
+    VolumeLoss = VolumeL(gts, preds, n_class=n_unique_classes)
 
-    return iou, class_wise_dice, single_class_dice, roc_auc_score
+    return iou, class_wise_dice, chan_wise_dice, single_class_dice, roc_auc_score, WBCE, L1Loss, VolumeLoss
 
 
 def classification_scores(gts, preds, labels):
@@ -128,34 +179,67 @@ def classification_stats(pred_seg, target, labels):
 
 
 class EarlyStopper():
-    def __init__(self, patience):
+    def __init__(self, json_opts, verbose=False):
+        self.patience = json_opts.patience if hasattr(json_opts, 'patience') else 10
+        self.min_epochs = json_opts.min_epochs if hasattr(json_opts, 'min_epochs') else 100
+        self.monitor = json_opts.monitor if hasattr(json_opts, 'monitor') else 'Seg_Loss'
+        self.verbose = verbose
+
         self.index = 0
-        self.patience = patience
         self.should_stop_early = False
+        self.is_improving = True
+        # Todo - it would probably make more sense to keep track of these variables in the model itself
+        self.best_loss = None
+        self.best_epoch = None
+        self.current_loss_total = 0
+        self.current_loss_count = 0
 
-    def update(self, model, epoch):
-        '''
-        Early stopper should be updated upon validation
-        :param model: current model state
-        :param epoch: current epoch
-        :return: boolean, stop or not to stop
-        '''
-        current_loss = model.get_current_errors()['Seg_Loss']
-        best_loss = model.best_validation_loss
-        best_epoch = model.best_epoch
+        if self.verbose:
+            print(f'Using early stopping with: {json_opts}')
 
-        if current_loss <= best_loss or epoch < 100:  # start early stopping after epoch 100
+    def update(self, losses):
+        '''
+        Early stopper should be updated upon every batch for validation
+        :param losses: OrderedDict of losses by their name as referenced in monitor
+        '''
+        self.current_loss_total += losses[self.monitor]
+        self.current_loss_count += 1
+
+    def get_current_validation_loss(self):
+        if self.current_loss_total is None:
+            return None
+        return self.current_loss_total / self.current_loss_count
+
+    def interrogate(self, epoch):
+        current_loss = self.get_current_validation_loss()
+
+        if self.best_loss is None:
+            self.best_loss = current_loss
+            self.best_epoch = epoch
+
+        elif current_loss <= self.best_loss:
             self.index = 0
-            print('current loss {} improved from {} at epoch {}'.format(current_loss, best_loss, best_epoch),
-                  '-- idx_early_stopping = {} / {}'.format(self.index, self.patience))
+            self.best_loss = current_loss
+            self.best_epoch = epoch
+            self.is_improving = True
+            if self.verbose:
+                print('current loss {} improved from {} at epoch {}'.format(current_loss, self.best_loss, self.best_epoch),
+                      '-- idx_early_stopping = {} / {}'.format(self.index, self.patience))
         else:
             self.index += 1
-            print('current loss {} did not improve from {} at epoch {}'.format(current_loss, best_loss, best_epoch),
-                  '-- idx_early_stopping = {} / {}'.format(self.index, self.patience))
+            self.is_improving = False
+            if self.verbose:
+                print('current loss {} did not improve from {} at epoch {}'.format(current_loss, self.best_loss, self.best_epoch),
+                      '-- idx_early_stopping = {} / {}'.format(self.index, self.patience))
 
-        if self.index >= self.patience:
-            print('early stopping')
+        if self.index >= self.patience and epoch >= self.min_epochs:  # start early stopping after epoch 100
+            print('-- early stopping')
             self.should_stop_early = True
+
+        self.reset()
 
         return self.should_stop_early
 
+    def reset(self):
+        self.current_loss_total = 0
+        self.current_loss_count = 0
