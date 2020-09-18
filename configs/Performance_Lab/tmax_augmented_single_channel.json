@@ -38,22 +38,22 @@
       "scale_size": [96,96,96,1],
       "prudent": 0,
       
-      "random_flip_prob": 0.0,
-      "flip_axis": 0,
-      "flip_prob_per_axis": 1.0,
+      "random_flip_prob": 1.0,
+      "flip_axis": [0, 1],
+      "flip_prob_per_axis": 0.5,
       
-      "random_elastic_prob": 0.0,
-      "max_deform": [0, 0, 0],
+      "random_elastic_prob": 1.0,
+      "max_deform": [7, 7, 0],
       "elastic_control_points": [7, 7, 7],
       
-      "random_affine_prob": 0.0,
-      "scale_val": [1,1],
-      "rotate": 0,
-      "shift_val": 0.0,
+      "random_affine_prob": 1.0,
+      "scale_val": [0.7,1.6],
+      "rotate": 90.0,
+      "shift_val": 10.0,
       
-      "random_noise_prob": 0.0,
+      "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
-      "noise_std": [0.0, 0.0]
+      "noise_std": [0.0, 1.0]
     }
   },
   "model":{
@@ -74,7 +74,7 @@
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "tmax_n_1",
+    "experiment_name": "tmax_aug_1c",
     "criterion": "dice_loss",
     "loss_weights": []
   }
