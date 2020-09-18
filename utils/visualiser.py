@@ -187,12 +187,17 @@ class Visualiser():
             else:
                 self.vis.line(X=np.array([x]), 
                               Y=np.array([y]), 
-                              markers=True, 
-                              markersymbol='+', 
-                              markersize = 7,
-                              win=self.error_plots[key], 
-                              name=split_name, 
-                              update='append')
+                              update='append',
+                              opts=dict(
+                                    legend=[split_name],
+                                    title=self.name + ' {} over time'.format(key),
+                                    xlabel='Epochs',
+                                    ylabel=key,
+                                    markers=True,
+                                    markersymbol='+',
+                                    markersize = 7,
+                                    win=self.error_wins[key]
+                              ))
         else:
             if key not in self.error_plots:
                 self.error_wins[key] = self.display_id * 3 + len(self.error_wins)
