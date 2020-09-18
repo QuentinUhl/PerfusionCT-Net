@@ -87,8 +87,8 @@ def train(arguments):
             visualizer.display_current_volumes(volumes, ids, 'train', epoch)
             train_volumes.append(volumes)
 
-        # Validation and Testing Iterations
-        for loader, split, dataset in zip([valid_loader, test_loader], ['validation', 'test'], [valid_dataset, test_dataset]):
+        # Validation Iterations
+        for loader, split, dataset in zip([train_loader, valid_loader], ['train', 'validation'], [train_dataset, valid_dataset]):
             for epoch_iter, (images, labels, indices) in tqdm(enumerate(loader, 1), total=len(loader)):
                 ids = dataset.get_ids(indices)
 
