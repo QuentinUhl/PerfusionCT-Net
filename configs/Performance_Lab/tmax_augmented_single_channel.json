@@ -25,7 +25,7 @@
     "train_size": 0.7,
     "test_size": 0.15,
     "validation_size": 0.15,
-    "seed": 42
+    "seed": 52
   },
   "data_path": {
     "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/rescaled_data_set.npz"
