@@ -28,7 +28,7 @@
     "seed": 42
   },
   "data_path": {
-    "gsd_pCT": "/home/quhl/data/working_data/pct_unet_all_2016_2017_complete/3_masks_clean_smooth_data_set.npz"
+    "gsd_pCT": "/home/quhl/data/working_data/clean_data_set_with_ncct_with_med.npz"
   },
   "data_opts":{
     "channels": [0]
