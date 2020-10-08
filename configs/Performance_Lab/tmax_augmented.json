@@ -7,7 +7,7 @@
     "batchSize": 2,
     "preloadData": true,
     "early_stopping":{
-      "patience": 10,
+      "patience": 60,
       "min_epochs": 15,
       "monitor": "Seg_Loss"
     },
