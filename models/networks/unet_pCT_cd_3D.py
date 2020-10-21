@@ -83,8 +83,8 @@ class unet_pCT_cd_3D(nn.Module):
         center = self.center(maxpool4)
         
         # Add medical data
-        print("center size" : center.shape)
-        print("clinical size" : clinical_data.shape)
+        print("center size : ", center.shape)
+        print("clinical size : ", clinical_data.shape)
         
         gating = self.gating(center)
         
