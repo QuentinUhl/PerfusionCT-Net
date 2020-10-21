@@ -155,7 +155,7 @@ class GenevaStrokeDataset_pCT(data.Dataset):
             if not self.preload_data:
                 med_data = np.load(self.dataset_path, allow_pickle=True)['clinical_inputs'][split_specific_index].astype(np.uint8)
             else:
-                med_data = self.raw_md
+                med_data = np.copy(self.raw_md[index])
             return input, target, med_data, index
         else:
             return input, target, index
