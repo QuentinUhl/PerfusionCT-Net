@@ -58,6 +58,8 @@ class ModelOpts:
         if hasattr(opts, 'attention_dsample'): self.attention_dsample = opts.attention_dsample
         # Classifier
         if hasattr(opts, 'aggregation_mode'): self.aggregation_mode = opts.aggregation_mode
+        # Clinical Data
+        if hasattr(opts, 'use_clinical_data'): self.use_clinical_data = opts.use_clinical_data
 
 def get_model(json_opts):
 
