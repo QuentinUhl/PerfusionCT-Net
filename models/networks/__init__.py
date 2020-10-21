@@ -4,7 +4,7 @@ from .unet_nonlocal_2D import *
 from .unet_nonlocal_3D import *
 from .unet_grid_attention_3D import *
 from .unet_pCT_multi_att_dsv_3D import *
-from .unet_pCT_md_3D import *
+from .unet_pCT_cd_3D import *
 
 
 def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D',
