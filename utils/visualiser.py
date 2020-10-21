@@ -194,9 +194,9 @@ class Visualiser():
                                     xlabel='Epochs',
                                     ylabel=key,
                                     markers=True,
-                                    markersymbol='+',
+                                    markersymbol='cross-thin-open',
                                     markersize = 7,
-                                    win=self.error_wins[key]
+                                    win=self.error_plots[key]
                               ))
         else:
             if key not in self.error_plots:

@@ -28,6 +28,8 @@ class FeedForwardSegmentation(BaseModel):
         self.output_nc = opts.output_nc
         self.multi_channel_output = opts.multi_channel_output
         self.output_cdim = opts.output_cdim
+        self.use_clinical_data = opts.use_clinical_data
+        self.use_cuda = opts.use_cuda
 
         # load/define networks
         self.net = get_network(opts.model_type, n_classes=opts.output_cdim*opts.output_nc,
@@ -78,15 +80,23 @@ class FeedForwardSegmentation(BaseModel):
                 self.input = _input.cuda() if self.use_cuda else _input
             elif idx == 1:
                 self.target = Variable(_input.cuda()) if self.use_cuda else Variable(_input)
+            if self.use_clinical_data and idx == 2:
+                self.clinical_data = Variable(_input.cuda()) if self.use_cuda else Variable(_input)
                 # assert self.input.size() == self.target.size()
 
     def forward(self, split):
         if split == 'train':
-            self.prediction = self.net(Variable(self.input))
+            if self.use_clinical_data:
+                self.prediction = self.net(Variable(self.input), self.clinical_data)
+            else:
+                self.prediction = self.net(Variable(self.input))
             self.pred_seg = None
         elif split == 'test':
             with torch.no_grad():
-                self.prediction = self.net(Variable(self.input))
+                if self.use_clinical_data:
+                    self.prediction = self.net(Variable(self.input), self.clinical_data)
+                else:
+                    self.prediction = self.net(Variable(self.input))
                 # Apply a softmax and return a segmentation map
                 if self.multi_channel_output: 
                     if self.output_nc > 1: # multiclass in multiple channels

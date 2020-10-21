@@ -6,11 +6,11 @@ from models.networks_other import init_weights
 from models.layers.grid_attention_layer import GridAttentionBlock3D
 
 
-class unet_pCT_md_3D(nn.Module):
+class unet_pCT_cd_3D(nn.Module):
 
     def __init__(self, feature_scale=4, n_classes=2, is_deconv=True, in_channels=4,
                  nonlocal_mode='concatenation', attention_dsample=(2,2,2), is_batchnorm=True):
-        super(unet_pCT_md_3D, self).__init__()
+        super(unet_pCT_cd_3D, self).__init__()
         self.is_deconv = is_deconv
         self.in_channels = in_channels
         self.is_batchnorm = is_batchnorm
@@ -65,7 +65,7 @@ class unet_pCT_md_3D(nn.Module):
             elif isinstance(m, nn.BatchNorm3d):
                 init_weights(m, init_type='kaiming')
 
-    def forward(self, inputs):
+    def forward(self, inputs, clinical_data):
         # Feature Extraction
         conv1 = self.conv1(inputs)
         maxpool1 = self.maxpool1(conv1)
@@ -83,7 +83,8 @@ class unet_pCT_md_3D(nn.Module):
         center = self.center(maxpool4)
         
         # Add medical data
-        print(center.shape)
+        print("center size" : center.shape)
+        print("clinical size" : clinical_data.shape)
         
         gating = self.gating(center)
         

@@ -8,7 +8,7 @@ from .utils import validate_images
 class GenevaStrokeDataset_pCT(data.Dataset):
     def __init__(self, dataset_path, split, transform=None, preload_data=False,
                  split_seed=42, train_size=0.7, test_size=0.15, valid_size=0.15,
-                 channels=[0, 1, 2, 3]):
+                 channels=[0, 1, 2, 3], use_cd=False):
         '''
         Loader for the Geneva Stroke Dateset (perfusion CT)
         :param dataset_path: path to dataset file
@@ -29,6 +29,9 @@ class GenevaStrokeDataset_pCT(data.Dataset):
         self.channels = channels
         print('Geneva Stroke Dataset (perfusion CT maps) parameters: ', self.params)
         print('Using channels:', np.array(['Tmax', 'CBF', 'MTT', 'CBV'])[channels])
+        self.use_cd = use_cd
+        if use_cd:
+            print('Using additional medical data')
 
         self.ids = np.load(dataset_path, allow_pickle=True)['ids']
 
@@ -81,10 +84,20 @@ class GenevaStrokeDataset_pCT(data.Dataset):
             self.raw_images = self.raw_images * self.raw_masks
 
             assert len(self.raw_images) == len(self.raw_labels)
+            
+            
+            if use_cd:
+                self.raw_md = np.load(dataset_path, allow_pickle=True)['clinical_inputs'][self.split_indices]
+                print("Medical Data dimension : ", self.raw_masks.shape)
+            
             print('Loading is done\n')
+            
 
     def get_ids(self, indices):
         return [self.ids[index] for index in indices]
+    
+    def get_use_cd(self):
+        return self.use_cd
 
     def __getitem__(self, index):
         '''
@@ -137,8 +150,15 @@ class GenevaStrokeDataset_pCT(data.Dataset):
             # transformer has to be initialised here to randomize seed
             transformer = self.transform()
             input, target = transformer(input, target)
-
-        return input, target, index
+        
+        if self.use_cd:
+            if not self.preload_data:
+                med_data = np.load(self.dataset_path, allow_pickle=True)['clinical_inputs'][split_specific_index].astype(np.uint8)
+            else:
+                med_data = self.raw_md
+            return input, target, med_data, index
+        else:
+            return input, target, index
 
     def __len__(self):
         return len(self.ids)

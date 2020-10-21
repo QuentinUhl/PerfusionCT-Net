@@ -1,22 +1,15 @@
 # Project journal
-## Implementing Clinical Input Update Version
 
-|Start Date|End Date  |
-|----------|----------|
-|2020-09-18|2020-10-09|
-
-### Description
+### October
+Changes in visualiser and train_segementation to plot only last test error
 
 
+### 21/10
+Implementation network with medical data
 
-### Delivrables
+Changes in model/network/init_ to add unet_pct_md
+Use Performance_Med/tmax_augmented.json to test the model
 
-- [x] Dice loss with binary channel
-- [x] Visualisation, prediction and plotting for binary channels
-
-### Conclusion
-
-- 
 
 
 
