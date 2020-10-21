@@ -88,7 +88,7 @@ class GenevaStrokeDataset_pCT(data.Dataset):
             
             if use_cd:
                 self.raw_md = np.load(dataset_path, allow_pickle=True)['clinical_inputs'][self.split_indices]
-                print("Medical Data dimension : ", self.raw_masks.shape)
+                print("Medical Data dimension : ", self.raw_md.shape)
             
             print('Loading is done\n')
             
