@@ -34,6 +34,10 @@ class unet_pCT_cd_3D(nn.Module):
 
         self.center = UnetConv3(filters[3], filters[4], self.is_batchnorm, kernel_size=(3,3,3), padding_size=(1,1,1))
         self.gating = UnetGridGatingSignal3(filters[4], filters[4], kernel_size=(1, 1, 1), is_batchnorm=self.is_batchnorm)
+        
+        # add clinical data
+        self.fc1 = nn.Linear(21,55296) #256*6*6*6
+        self.relu = nn.ReLU()
 
         # attention blocks
         self.attentionblock2 = MultiAttentionBlock(in_size=filters[1], gate_size=filters[2], inter_size=filters[1],
@@ -83,10 +87,12 @@ class unet_pCT_cd_3D(nn.Module):
         center = self.center(maxpool4)
         
         # Add medical data
-        print("center size : ", center.shape)
-        print("clinical size : ", clinical_data.shape)
+        #print("center size : ", center.shape)
+        #print("clinical size : ", clinical_data.shape)
         
-        gating = self.gating(center)
+        decoded_clinical_data = self.relu(self.fc1(clinical_data)).view((-1,256,6,6,6))
+        
+        gating = self.gating(center+decoded_clinical_data)
         
 
         # Attention Mechanism
