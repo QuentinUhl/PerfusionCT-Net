@@ -171,9 +171,9 @@ class Visualiser():
         if split_name == 'test':
             if key not in self.error_plots:
                 self.error_wins[key] = self.display_id * 3 + len(self.error_wins)
-                self.error_plots[key] = self.vis.scatter(
-                    X=np.array([x]),
-                    Y=np.array([y]),
+                self.error_plots[key] = self.vis.line(
+                    X=np.array([x, x]),
+                    Y=np.array([y, y]),
                     opts=dict(
                         legend=[split_name],
                         title=self.name + ' {} over time'.format(key),
@@ -185,19 +185,28 @@ class Visualiser():
                         win=self.error_wins[key]
                 ))
             else:
-                self.vis.line(X=np.array([x]), 
-                              Y=np.array([y]), 
-                              update='append',
-                              opts=dict(
-                                    legend=[split_name],
-                                    title=self.name + ' {} over time'.format(key),
-                                    xlabel='Epochs',
-                                    ylabel=key,
-                                    markers=True,
-                                    markersymbol='cross-thin-open',
-                                    markersize = 7,
-                                    win=self.error_plots[key]
-                              ))
+                if self.error_plots[key] is not None:
+                    self.vis.line(X=np.array([x]), 
+                                  Y=np.array([y]), 
+                                  win=self.error_plots[key], 
+                                  name=split_name, 
+                                  update='append')
+                else:
+                    print("Problem with Visualizer")
+                    self.error_wins[key] = self.display_id * 3 + len(self.error_wins)
+                    self.error_plots[key] = self.vis.line(
+                        X=np.array([x, x]),
+                        Y=np.array([y, y]),
+                        opts=dict(
+                            legend=[split_name],
+                            title=self.name + ' {} over time'.format(key),
+                            xlabel='Epochs',
+                            ylabel=key,
+                            markers=True,
+                            markersymbol='cross-thin-open',
+                            markersize = 7,
+                            win=self.error_wins[key]
+                    ))
         else:
             if key not in self.error_plots:
                 self.error_wins[key] = self.display_id * 3 + len(self.error_wins)

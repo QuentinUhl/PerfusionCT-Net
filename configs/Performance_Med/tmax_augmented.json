@@ -1,7 +1,7 @@
 {
   "training":{
     "arch_type": "gsd_pCT",
-    "n_epochs": 300,
+    "n_epochs": 500,
     "lr_policy": "step",
     "lr_decay_iters": 250,
     "batchSize": 2,
@@ -74,7 +74,7 @@
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "tmax_augmented_with_med",
+    "experiment_name": "tmax_augmented_with_med_fc1_64_fc2",
     "criterion": "dice_loss"
   }
 }
