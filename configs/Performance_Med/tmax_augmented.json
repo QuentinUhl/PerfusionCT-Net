@@ -74,7 +74,7 @@
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "tmax_augmented_with_med_fc1_64_fc2",
+    "experiment_name": "tmax_augmented_with_med_2_fc_attention",
     "criterion": "dice_loss"
   }
 }
