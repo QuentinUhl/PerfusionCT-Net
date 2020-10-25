@@ -185,7 +185,6 @@ class Visualiser():
                         win=self.error_wins[key]
                 ))
             else:
-                print("No Problem with Visualizer")
                 if self.error_plots[key] is not None:
                     self.vis.line(X=np.array([x-0.5, x]), 
                                   Y=np.array([y, y]), 
