@@ -94,7 +94,7 @@ class unet_pCT_cd_3D(nn.Module):
         #print("clinical size : ", clinical_data.shape)
         decoded_clinical_data = self.relu(self.fc2(self.relu(self.fc1(clinical_data.float())))).view((-1,256,6,6,6))
         #print("decoded clinical size : ", decoded_clinical_data.shape)
-        pregating = self.attentionblockmed(center, decoded_clinical_data)
+        pregating, attpre = self.attentionblockmed(center, decoded_clinical_data)
         
         gating = self.gating(pregating) # or (center+decoded_clinical_data)
         
