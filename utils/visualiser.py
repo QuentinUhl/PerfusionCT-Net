@@ -172,7 +172,7 @@ class Visualiser():
             if key not in self.error_plots:
                 self.error_wins[key] = self.display_id * 3 + len(self.error_wins)
                 self.error_plots[key] = self.vis.line(
-                    X=np.array([x, x]),
+                    X=np.array([x-0.5, x]),
                     Y=np.array([y, y]),
                     opts=dict(
                         legend=[split_name],
@@ -185,9 +185,10 @@ class Visualiser():
                         win=self.error_wins[key]
                 ))
             else:
+                print("No Problem with Visualizer")
                 if self.error_plots[key] is not None:
-                    self.vis.line(X=np.array([x]), 
-                                  Y=np.array([y]), 
+                    self.vis.line(X=np.array([x-0.5, x]), 
+                                  Y=np.array([y, y]), 
                                   win=self.error_plots[key], 
                                   name=split_name, 
                                   update='append')
