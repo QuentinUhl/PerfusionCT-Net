@@ -37,7 +37,7 @@ class FeedForwardSegmentation(BaseModel):
             self.use_cuda = opts.use_cuda
         else:
             self.use_cuda = True
-        
+
         # load/define networks
         self.net = get_network(opts.model_type, n_classes=opts.output_cdim*opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,

@@ -43,20 +43,26 @@ def train(arguments):
         print('fp time: {0:.3f} sec\tbp time: {1:.3f} sec per sample'.format(*model.get_fp_bp_time()))
         exit()
 
+    # Setup Clinical Data Availability
+    if hasattr(json_opts.model, 'use_clinical_data'):
+        use_clinical_data = json_opts.model.use_clinical_data
+    else:
+        use_clinical_data = False
+
     # Setup Data Loader
     split_opts = json_opts.data_split
     train_dataset = ds_class(ds_path, split='train',      transform=ds_transform['train'], preload_data=train_opts.preloadData,
                              train_size=split_opts.train_size, test_size=split_opts.test_size,
                              valid_size=split_opts.validation_size, split_seed=split_opts.seed, channels=channels,
-                             use_cd = json_opts.model.use_clinical_data)
+                             use_cd = use_clinical_data)
     valid_dataset = ds_class(ds_path, split='validation', transform=ds_transform['valid'], preload_data=train_opts.preloadData,
                              train_size=split_opts.train_size, test_size=split_opts.test_size,
                              valid_size=split_opts.validation_size, split_seed=split_opts.seed, channels=channels,
-                             use_cd = json_opts.model.use_clinical_data)
+                             use_cd = use_clinical_data)
     test_dataset  = ds_class(ds_path, split='test',       transform=ds_transform['valid'], preload_data=train_opts.preloadData,
                              train_size=split_opts.train_size, test_size=split_opts.test_size,
                              valid_size=split_opts.validation_size, split_seed=split_opts.seed, channels=channels,
-                             use_cd = json_opts.model.use_clinical_data)
+                             use_cd = use_clinical_data)
     train_loader = DataLoader(dataset=train_dataset, num_workers=0, batch_size=train_opts.batchSize, shuffle=True)
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
     test_loader  = DataLoader(dataset=test_dataset,  num_workers=0, batch_size=train_opts.batchSize, shuffle=False)
