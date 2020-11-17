@@ -28,7 +28,10 @@ class FeedForwardSegmentation(BaseModel):
         self.output_nc = opts.output_nc
         self.multi_channel_output = opts.multi_channel_output
         self.output_cdim = opts.output_cdim
-        self.use_clinical_data = opts.use_clinical_data
+        if hasattr(opts, 'use_clinical_data'):
+            self.use_clinical_data = opts.use_clinical_data
+        else:
+            self.use_clinical_data = False
         self.use_cuda = opts.use_cuda
 
         # load/define networks
