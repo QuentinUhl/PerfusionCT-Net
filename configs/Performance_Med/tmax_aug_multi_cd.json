@@ -1,11 +1,11 @@
 {
   "training":{
     "arch_type": "gsd_pCT",
-    "n_epochs": 3,
+    "n_epochs": 500,
     "lr_policy": "step",
     "lr_decay_iters": 250,
     "batchSize": 2,
-    "preloadData": false,
+    "preloadData": true,
     "early_stopping":{
       "patience": 60,
       "min_epochs": 150,
