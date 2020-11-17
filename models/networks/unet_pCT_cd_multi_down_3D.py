@@ -37,22 +37,22 @@ class unet_pCT_cd_multi_down_3D(nn.Module):
         
         # add clinical data
         self.fc1 = nn.Linear(21,self.filters[0])
-        self.attentionblockmed1 = MultiAttentionBlock(in_size=self.filters[4], gate_size=self.filters[4], inter_size=self.filters[1],
+        self.attentionblockmed1 = MultiAttentionBlock(in_size=self.filters[0], gate_size=self.filters[0], inter_size=self.filters[0],
                                                      nonlocal_mode=nonlocal_mode, sub_sample_factor=attention_dsample)
         self.fc2 = nn.Linear(21,self.filters[1])
-        self.attentionblockmed2 = MultiAttentionBlock(in_size=self.filters[4], gate_size=self.filters[4], inter_size=self.filters[1],
+        self.attentionblockmed2 = MultiAttentionBlock(in_size=self.filters[1], gate_size=self.filters[1], inter_size=self.filters[1],
                                                      nonlocal_mode=nonlocal_mode, sub_sample_factor=attention_dsample)
         self.fc3 = nn.Linear(21,self.filters[2])
-        self.attentionblockmed3 = MultiAttentionBlock(in_size=self.filters[4], gate_size=self.filters[4], inter_size=self.filters[1],
+        self.attentionblockmed3 = MultiAttentionBlock(in_size=self.filters[2], gate_size=self.filters[2], inter_size=self.filters[2],
                                                      nonlocal_mode=nonlocal_mode, sub_sample_factor=attention_dsample)
         self.fc4 = nn.Linear(21,self.filters[3])
-        self.attentionblockmed4 = MultiAttentionBlock(in_size=self.filters[4], gate_size=self.filters[4], inter_size=self.filters[1],
+        self.attentionblockmed4 = MultiAttentionBlock(in_size=self.filters[3], gate_size=self.filters[3], inter_size=self.filters[3],
                                                      nonlocal_mode=nonlocal_mode, sub_sample_factor=attention_dsample)
 
         self.fc5a = nn.Linear(21, 64)
         self.fc5b = nn.Linear(64,self.filters[4]) #256*1*1*1
         self.relu = nn.ReLU()
-        self.attentionblockmed5 = MultiAttentionBlock(in_size=self.filters[4], gate_size=self.filters[4], inter_size=self.filters[1],
+        self.attentionblockmed5 = MultiAttentionBlock(in_size=self.filters[4], gate_size=self.filters[4], inter_size=self.filters[4],
                                                    nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
 
         # attention blocks
@@ -93,28 +93,28 @@ class unet_pCT_cd_multi_down_3D(nn.Module):
         print("conv1 size : ", conv1.shape)
         print("cd_fc1 size : ", cd_fc1.shape)
         print("cd_fc1 size : ", cd_fc1.view((-1, self.filters[1], 1, 1, 1)).shape)
-        cd_fc1 = cd_fc1.view((-1, self.filters[1], 1, 1, 1)) * conv1
+        cd_fc1 = cd_fc1.view((-1, self.filters[0], 1, 1, 1)) * conv1
         conv1, _ = self.attentionblockmed1(conv1, cd_fc1)
         maxpool1 = self.maxpool1(conv1)
 
         cd_fc2 = self.fc2(clinical_data.float())
         cd_fc2 = self.relu(cd_fc2)
         conv2 = self.conv2(maxpool1)
-        cd_fc2 = cd_fc2.view((-1, self.filters[2], 1, 1, 1)) * conv2
+        cd_fc2 = cd_fc2.view((-1, self.filters[1], 1, 1, 1)) * conv2
         conv2, _ = self.attentionblockmed2(conv2, cd_fc2)
         maxpool2 = self.maxpool2(conv2)
 
         cd_fc3 = self.fc3(clinical_data.float())
         cd_fc3 = self.relu(cd_fc3)
         conv3 = self.conv3(maxpool2)
-        cd_fc3 = cd_fc3.view((-1, self.filters[3], 1, 1, 1)) * conv3
+        cd_fc3 = cd_fc3.view((-1, self.filters[2], 1, 1, 1)) * conv3
         conv3, _ = self.attentionblockmed3(conv3, cd_fc3)
         maxpool3 = self.maxpool3(conv3)
 
         cd_fc4 = self.fc4(clinical_data.float())
         cd_fc4 = self.relu(cd_fc4)
         conv4 = self.conv4(maxpool3)
-        cd_fc4 = cd_fc4.view((-1, self.filters[4], 1, 1, 1)) * conv4
+        cd_fc4 = cd_fc4.view((-1, self.filters[3], 1, 1, 1)) * conv4
         conv4, _ = self.attentionblockmed4(conv4, cd_fc4)
         maxpool4 = self.maxpool4(conv4)
 
