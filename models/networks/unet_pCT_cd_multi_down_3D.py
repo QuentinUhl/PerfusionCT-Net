@@ -90,9 +90,9 @@ class unet_pCT_cd_multi_down_3D(nn.Module):
         cd_fc1 = self.fc1(clinical_data.float())
         cd_fc1 = self.relu(cd_fc1)
         conv1 = self.conv1(inputs)
-        print("conv1 size : ", conv1.shape)
-        print("cd_fc1 size : ", cd_fc1.shape)
-        print("cd_fc1 size : ", cd_fc1.view((-1, self.filters[1], 1, 1, 1)).shape)
+        # print("conv1 size : ", conv1.shape)
+        # print("cd_fc1 size : ", cd_fc1.shape)
+        # print("cd_fc1 size : ", cd_fc1.view((-1, self.filters[1], 1, 1, 1)).shape)
         cd_fc1 = cd_fc1.view((-1, self.filters[0], 1, 1, 1)) * conv1
         conv1, _ = self.attentionblockmed1(conv1, cd_fc1)
         maxpool1 = self.maxpool1(conv1)
@@ -135,7 +135,7 @@ class unet_pCT_cd_multi_down_3D(nn.Module):
 
         # Attention Mechanism
         # Upscaling Part (Decoder)
-        g_conv4, att4 = self.attentionblock4(conv4, gating)
+        g_conv4, att4 = self.attentionblock4(conv4, pregating)
         up4 = self.up_concat4(g_conv4, center)
         g_conv3, att3 = self.attentionblock3(conv3, up4)
         up3 = self.up_concat3(g_conv3, up4)
