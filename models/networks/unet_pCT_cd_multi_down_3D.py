@@ -92,6 +92,7 @@ class unet_pCT_cd_multi_down_3D(nn.Module):
         conv1 = self.conv1(inputs)
         print("conv1 size : ", conv1.shape)
         print("cd_fc1 size : ", cd_fc1.shape)
+        print("cd_fc1 size : ", cd_fc1.view((-1, self.filters[1], 1, 1, 1)).shape)
         cd_fc1 = cd_fc1.view((-1, self.filters[1], 1, 1, 1)) * conv1
         conv1, _ = self.attentionblockmed1(conv1, cd_fc1)
         maxpool1 = self.maxpool1(conv1)
