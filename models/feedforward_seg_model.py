@@ -32,8 +32,12 @@ class FeedForwardSegmentation(BaseModel):
             self.use_clinical_data = opts.use_clinical_data
         else:
             self.use_clinical_data = False
-        self.use_cuda = opts.use_cuda
 
+        if hasattr(opts, 'use_cuda'):
+            self.use_cuda = opts.use_cuda
+        else:
+            self.use_cuda = True
+        
         # load/define networks
         self.net = get_network(opts.model_type, n_classes=opts.output_cdim*opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
