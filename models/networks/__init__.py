@@ -35,6 +35,8 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       feature_scale=feature_scale,
                       attention_dsample=attention_dsample,
                       is_deconv=False)
+    elif name in ['kiunet']:
+        model = model(training=False)
     else:
         raise 'Model {} not available'.format(name)
 
