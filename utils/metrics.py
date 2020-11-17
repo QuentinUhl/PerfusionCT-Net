@@ -80,7 +80,7 @@ def chan_wise_dice_score(label_gt, label_pred, output_cdim=1):
     for batch_id, (l_gt, l_pred) in enumerate(zip(label_gt, label_pred)):
         for cdim in range(output_cdim):
             img_A = np.array(l_gt[cdim, ...], dtype=np.float32).flatten()
-            img_B = np.array(l_pred[cdim, ...], dtype=np.float32).flatten()
+            img_B = np.array((l_pred[cdim, ...]>0.5), dtype=np.float32).flatten()
             score = 2.0 * np.sum(img_A * img_B) / (np.sum(img_A) + np.sum(img_B) + epsilon)
             dice_scores[batch_id, cdim] = score
 

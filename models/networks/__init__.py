@@ -5,6 +5,7 @@ from .unet_nonlocal_3D import *
 from .unet_grid_attention_3D import *
 from .unet_pCT_multi_att_dsv_3D import *
 from .unet_pCT_cd_3D import *
+from .unet_pCT_cd_multi_down_3D import *
 from .unet_with_cd_3D import *
 from .unet_without_cd_3D import *
 
@@ -27,7 +28,7 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       is_deconv=False,
                       nonlocal_mode=nonlocal_mode,
                       feature_scale=feature_scale)
-    elif name in ['unet_grid_gating', 'unet_pct_multi_att_dsv', 'unet_pct_cd', 'unet_with_cd', 'unet_without_cd']:
+    elif name in ['unet_grid_gating', 'unet_pct_multi_att_dsv', 'unet_pct_cd', 'unet_pCT_cd_multi_down', 'unet_with_cd', 'unet_without_cd']:
         model = model(n_classes=n_classes,
                       is_batchnorm=True,
                       in_channels=in_channels,
@@ -50,6 +51,7 @@ def _get_model_instance(name, tensor_dim):
         'unet_grid_gating': {'3D': unet_grid_attention_3D},
         'unet_pct_multi_att_dsv': {'3D': unet_pCT_multi_att_dsv_3D},
         'unet_pct_cd': {'3D': unet_pCT_cd_3D},
+        'unet_pCT_cd_multi_down': {'3D': unet_pCT_cd_multi_down_3D},
         'unet_with_cd': {'3D': unet_with_cd_3D},
         'unet_without_cd': {'3D': unet_without_cd_3D}
         

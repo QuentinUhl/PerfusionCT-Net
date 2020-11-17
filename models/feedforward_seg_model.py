@@ -161,9 +161,9 @@ class FeedForwardSegmentation(BaseModel):
                      ('Overall_Dice', self.overall_dice_score), ('ROC_AUC', self.roc_auc_score),
                      ('WBCE_score', self.WBCE_score), ('L1_score', self.L1_score), ('Volume_score', self.Volume_score)]
         for class_id in range(self.class_dice_score.size):
-            seg_stats.append(('Class_{}'.format(class_id), self.class_dice_score[class_id]))
+            seg_stats.append(('Class_{}_Dice'.format(class_id), self.class_dice_score[class_id]))
         for chan_id in range(self.chan_dice_score.size):
-            seg_stats.append(('Channel_{}'.format(chan_id), self.chan_dice_score[chan_id]))
+            seg_stats.append(('Channel_{}_Dice'.format(chan_id), self.chan_dice_score[chan_id]))
         return OrderedDict(seg_stats)
 
     def get_current_errors(self):
