@@ -56,18 +56,18 @@ class FeedForwardSegmentation(BaseModel):
                 self.load_network(self.net, 'S', self.which_epoch)
 
         # training objective
-        if self.isTrain:
-            self.criterion = get_criterion(opts)
-            # initialize optimizers
-            self.schedulers = []
-            self.optimizers = []
-            self.optimizer_S = get_optimizer(opts, self.net.parameters())
-            self.optimizers.append(self.optimizer_S)
+        #if self.isTrain:
+        self.criterion = get_criterion(opts)
+        # initialize optimizers
+        self.schedulers = []
+        self.optimizers = []
+        self.optimizer_S = get_optimizer(opts, self.net.parameters())
+        self.optimizers.append(self.optimizer_S)
 
-            # print the network details
-            if kwargs.get('verbose', True):
-                print('Network is initialized')
-                print_network(self.net)
+        # print the network details
+        if kwargs.get('verbose', True):
+            print('Network is initialized')
+            print_network(self.net)
 
     def set_scheduler(self, train_opt):
         for optimizer in self.optimizers:
