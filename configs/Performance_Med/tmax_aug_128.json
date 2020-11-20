@@ -1,14 +1,14 @@
 {
   "training":{
     "arch_type": "gsd_pCT",
-    "n_epochs": 4,
+    "n_epochs": 600,
     "lr_policy": "step",
-    "lr_decay_iters": 250,
+    "lr_decay_iters": 400,
     "batchSize": 2,
     "preloadData": true,
     "early_stopping":{
-      "patience": 60,
-      "min_epochs": 150,
+      "patience": 150,
+      "min_epochs": 250,
       "monitor": "Seg_Loss"
     },
     "verbose": "True"
@@ -25,7 +25,7 @@
     "train_size": 0.7,
     "test_size": 0.15,
     "validation_size": 0.15,
-    "seed": 52
+    "seed": 42
   },
   "data_path": {
     "gsd_pCT": "/home/quhl/data/working_data/data_set_128.npz"
@@ -38,22 +38,22 @@
       "scale_size": [128,128,128,1],
       "prudent": 0,
       
-      "random_flip_prob": 1.0,
+      "random_flip_prob": 0.0,
       "flip_axis": [0, 1],
       "flip_prob_per_axis": 0.5,
       
       "random_elastic_prob": 1.0,
-      "max_deform": [7, 7, 0],
+      "max_deform": [4, 4, 0],
       "elastic_control_points": [7, 7, 7],
       
-      "random_affine_prob": 1.0,
+      "random_affine_prob": 0.0,
       "scale_val": [0.7,1.6],
       "rotate": 90.0,
       "shift_val": 10.0,
       
       "random_noise_prob": 1.0,
       "noise_mean" : 0.0,
-      "noise_std": [0.0, 1.0]
+      "noise_std": [0.0, 0.5]
     }
   },
   "model":{
@@ -70,7 +70,7 @@
     "output_cdim": 1,
     "lr_rate": 1e-4,
     "l2_reg_weight": 1e-6,
-    "feature_scale": 4,
+    "feature_scale": 2,
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
