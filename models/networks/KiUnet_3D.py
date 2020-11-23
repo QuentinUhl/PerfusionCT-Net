@@ -3,10 +3,10 @@ import torch.nn.functional as F
 import torch
 
 
-class kiunet_3d(nn.Module):
+class kiunet_3D(nn.Module):
 
     def __init__(self, training):
-        super(kiunet_3d, self).__init__()
+        super(kiunet_3D, self).__init__()
         self.training = training
         self.start = nn.Conv3d(1, 1, 3, stride=2, padding=1)
 
