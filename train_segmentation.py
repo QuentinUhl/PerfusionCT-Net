@@ -122,7 +122,7 @@ def train(arguments):
                 early_stopper.update({**errors, **stats})
             
             # Test Iterations
-            if epoch == train_opts.n_epochs-1:
+            if epoch == train_opts.n_epochs-1 or early_stopper.interrogate(epoch):
                 for loader, split, dataset in zip([test_loader], ['test'], [test_dataset]):
                     for epoch_iter, (images, labels, clinical_data, indices) in tqdm(enumerate(loader, 1), total=len(loader)):
                         ids = dataset.get_ids(indices)
@@ -200,7 +200,7 @@ def train(arguments):
                 early_stopper.update({**errors, **stats})
             
             # Test Iterations
-            if epoch == train_opts.n_epochs-1:
+            if epoch == train_opts.n_epochs-1 or early_stopper.interrogate(epoch):
                 for loader, split, dataset in zip([test_loader], ['test'], [test_dataset]):
                     for epoch_iter, (images, labels, indices) in tqdm(enumerate(loader, 1), total=len(loader)):
                         ids = dataset.get_ids(indices)
