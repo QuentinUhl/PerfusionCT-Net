@@ -54,7 +54,7 @@ def _get_model_instance(name, tensor_dim):
         'unet_pct_cd': {'3D': unet_pCT_cd_3D},
         'unet_pCT_cd_multi_down': {'3D': unet_pCT_cd_multi_down_3D},
         'unet_with_cd': {'3D': unet_with_cd_3D},
-        'unet_without_cd': {'3D': unet_without_cd_3D}
+        'unet_without_cd': {'3D': unet_without_cd_3D},
         'kiunet': {'3D': kiunet_3D}
         
     }[name][tensor_dim]
