@@ -105,9 +105,9 @@ class kiunet_3D(nn.Module):
         # initialise weights
         for m in self.modules():
             if isinstance(m, nn.Conv3d):
-                init_weights(m, init_type='kaiming')
+                init_weights(m, init_type='xavier')
             elif isinstance(m, nn.BatchNorm3d):
-                init_weights(m, init_type='kaiming')
+                init_weights(m, init_type='xavier')
 
     def forward(self, x):
         # print(x.shape)
