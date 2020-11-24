@@ -16,7 +16,7 @@
   "visualisation":{
     "display_port": 9000,
     "no_html": true,
-    "save_epoch_freq": 10,
+    "save_epoch_freq": 100,
     "display_winsize": 256,
     "display_id": 1,
     "display_single_pane_ncols": 0
@@ -63,12 +63,11 @@
     "model_type": "kiunet",
     "tensor_dim": "3D",
     "optim": "adam",
-    "division_factor": 16,
     "input_nc": 1,
     "output_nc": 1,
     "multi_channel_output": 0,
     "output_cdim": 1,
-    "lr_rate": 1e-4,
+    "lr_rate": 1e-3,
     "l2_reg_weight": 1e-6,
     "feature_scale": 1,
     "gpu_ids": [0],
