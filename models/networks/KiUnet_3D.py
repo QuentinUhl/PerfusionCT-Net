@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
+from models.networks_other import init_weights
 
 
 class kiunet_3D(nn.Module):
@@ -100,6 +101,13 @@ class kiunet_3D(nn.Module):
         )
 
         self.soft = nn.Softmax(dim=1)
+
+        # initialise weights
+        for m in self.modules():
+            if isinstance(m, nn.Conv3d):
+                init_weights(m, init_type='kaiming')
+            elif isinstance(m, nn.BatchNorm3d):
+                init_weights(m, init_type='kaiming')
 
     def forward(self, x):
         # print(x.shape)
