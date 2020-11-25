@@ -71,11 +71,12 @@
     "l2_reg_weight": 1e-6,
     "feature_scale": 1,
     "gpu_ids": [0],
-    "isTrain": true,
+    "isTrain": false,
     "checkpoints_dir": "./checkpoints",
     "experiment_name": "kiunet_tmax_laug_128",
     "criterion": "dice_loss",
-    "loss_weights": []
+    "loss_weights": [],
+    "path_pre_trained_model": "./configs/498_net_kiunet_n_bFFE.pth"
   }
 }
 
