@@ -34,8 +34,8 @@ class FeedForwardSegmentation(BaseModel):
         else:
             self.use_clinical_data = False
 
-        if hasattr(opts, 'cd_size'):
-            self.cd_size = opts.cd_size
+        if hasattr(opts, 'clinical_data_size'):
+            self.cd_size = opts.clinical_data_size
             print("yes cd size")
         else:
             self.cd_size = 0

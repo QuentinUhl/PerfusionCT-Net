@@ -63,7 +63,7 @@
     "model_type": "unet_pct_cd_plus",
     "tensor_dim": "3D",
     "use_clinical_data": true,
-    "cd_size": 22,
+    "clinical_data_size": 22,
     "optim": "adam",
     "division_factor": 16,
     "input_nc": 1,
