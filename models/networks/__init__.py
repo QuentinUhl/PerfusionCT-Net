@@ -39,6 +39,7 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       attention_dsample=attention_dsample,
                       is_deconv=False)
     elif name in ['unet_pct_cd', 'unet_pct_cd_plus']:
+        print(cd_size)
         model = model(n_classes=n_classes,
                       is_batchnorm=True,
                       in_channels=in_channels,
