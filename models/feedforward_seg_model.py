@@ -30,15 +30,15 @@ class FeedForwardSegmentation(BaseModel):
         self.output_cdim = opts.output_cdim
         if hasattr(opts, 'use_clinical_data'):
             self.use_clinical_data = opts.use_clinical_data
+            print("yes cd")
         else:
             self.use_clinical_data = False
 
         if hasattr(opts, 'cd_size'):
             self.cd_size = opts.cd_size
-            print("youpi")
+            print("yes cd size")
         else:
             self.cd_size = 0
-            print("wtf")
 
         if hasattr(opts, 'use_cuda'):
             self.use_cuda = opts.use_cuda
