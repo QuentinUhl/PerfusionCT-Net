@@ -33,6 +33,11 @@ class FeedForwardSegmentation(BaseModel):
         else:
             self.use_clinical_data = False
 
+        if hasattr(opts, 'cd_size'):
+            self.cd_size = opts.cd_size
+        else:
+            self.cd_size = 0
+
         if hasattr(opts, 'use_cuda'):
             self.use_cuda = opts.use_cuda
         else:
@@ -42,7 +47,8 @@ class FeedForwardSegmentation(BaseModel):
         self.net = get_network(opts.model_type, n_classes=opts.output_cdim*opts.output_nc,
                                in_channels=opts.input_nc, nonlocal_mode=opts.nonlocal_mode,
                                tensor_dim=opts.tensor_dim, feature_scale=opts.feature_scale,
-                               attention_dsample=opts.attention_dsample)
+                               attention_dsample=opts.attention_dsample,
+                               cd_size=self.cd_size)
         if self.use_cuda: self.net = self.net.cuda()
 
         # load the model if a path is specified or it is in inference mode

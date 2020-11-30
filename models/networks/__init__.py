@@ -9,11 +9,12 @@ from .unet_pCT_cd_multi_down_3D import *
 from .unet_with_cd_3D import *
 from .unet_without_cd_3D import *
 from .KiUnet_3D import *
+from .unet_pCT_cd_plus_3D import *
 
 
 def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D',
                 nonlocal_mode='embedded_gaussian', attention_dsample=(2,2,2),
-                aggregation_mode='concat'):
+                cd_size=0):
     model = _get_model_instance(name, tensor_dim)
 
     if name in ['unet']:
@@ -29,7 +30,7 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       is_deconv=False,
                       nonlocal_mode=nonlocal_mode,
                       feature_scale=feature_scale)
-    elif name in ['unet_grid_gating', 'unet_pct_multi_att_dsv', 'unet_pct_cd', 'unet_pCT_cd_multi_down', 'unet_with_cd', 'unet_without_cd']:
+    elif name in ['unet_grid_gating', 'unet_pct_multi_att_dsv', 'unet_pCT_cd_multi_down', 'unet_with_cd', 'unet_without_cd']:
         model = model(n_classes=n_classes,
                       is_batchnorm=True,
                       in_channels=in_channels,
@@ -37,6 +38,15 @@ def get_network(name, n_classes, in_channels=3, feature_scale=4, tensor_dim='2D'
                       feature_scale=feature_scale,
                       attention_dsample=attention_dsample,
                       is_deconv=False)
+    elif name in ['unet_pct_cd', 'unet_pct_cd_plus']:
+        model = model(n_classes=n_classes,
+                      is_batchnorm=True,
+                      in_channels=in_channels,
+                      nonlocal_mode=nonlocal_mode,
+                      feature_scale=feature_scale,
+                      attention_dsample=attention_dsample,
+                      is_deconv=False,
+                      cd_size=cd_size)
     elif name in ['kiunet']:
         model = model(training=False)
     else:
@@ -52,6 +62,7 @@ def _get_model_instance(name, tensor_dim):
         'unet_grid_gating': {'3D': unet_grid_attention_3D},
         'unet_pct_multi_att_dsv': {'3D': unet_pCT_multi_att_dsv_3D},
         'unet_pct_cd': {'3D': unet_pCT_cd_3D},
+        'unet_pct_cd_plus': {'3D': unet_pCT_cd_plus_3D},
         'unet_pCT_cd_multi_down': {'3D': unet_pCT_cd_multi_down_3D},
         'unet_with_cd': {'3D': unet_with_cd_3D},
         'unet_without_cd': {'3D': unet_without_cd_3D},
