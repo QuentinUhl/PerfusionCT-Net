@@ -28,16 +28,13 @@ class FeedForwardSegmentation(BaseModel):
         self.output_nc = opts.output_nc
         self.multi_channel_output = opts.multi_channel_output
         self.output_cdim = opts.output_cdim
-        print(opts.__dict__.keys())
         if hasattr(opts, 'use_clinical_data'):
             self.use_clinical_data = opts.use_clinical_data
-            print("yes cd")
         else:
             self.use_clinical_data = False
 
         if hasattr(opts, 'clinical_data_size'):
             self.cd_size = opts.clinical_data_size
-            print("yes cd size")
         else:
             self.cd_size = 0
 

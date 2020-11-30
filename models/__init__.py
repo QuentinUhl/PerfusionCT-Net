@@ -60,6 +60,7 @@ class ModelOpts:
         if hasattr(opts, 'aggregation_mode'): self.aggregation_mode = opts.aggregation_mode
         # Clinical Data
         if hasattr(opts, 'use_clinical_data'): self.use_clinical_data = opts.use_clinical_data
+        if hasattr(opts, 'clinical_data_size'): self.clinical_data_size = opts.clinical_data_size
         # Switch GPU/CPU
         if hasattr(opts, 'use_cuda'): self.use_cuda = opts.use_cuda
 
