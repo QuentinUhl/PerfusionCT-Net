@@ -35,9 +35,10 @@ class FeedForwardSegmentation(BaseModel):
 
         if hasattr(opts, 'cd_size'):
             self.cd_size = opts.cd_size
+            print("youpi")
         else:
             self.cd_size = 0
-        print(self.cd_size)
+            print("wtf")
 
         if hasattr(opts, 'use_cuda'):
             self.use_cuda = opts.use_cuda
