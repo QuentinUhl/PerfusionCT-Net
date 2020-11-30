@@ -91,12 +91,12 @@ class unet_pCT_cd_plus_3D(nn.Module):
         center = self.center(maxpool4)
         
         # Add medical data
-        #print("center size : ", center.shape)
+        print("center size : ", center.shape)
         #print("clinical size : ", clinical_data.shape)
         decoded_clinical_data = self.relu(self.fc2(self.relu(self.fc1(clinical_data.float())))).view((-1,1,6,6,6))
-        #print("decoded clinical size : ", decoded_clinical_data.shape)
+        print("decoded clinical size : ", decoded_clinical_data.shape)
         pregating = center + decoded_clinical_data
-        
+
         gating = self.gating(pregating) # or (center+decoded_clinical_data)
         
 
