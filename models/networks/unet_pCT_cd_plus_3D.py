@@ -38,7 +38,7 @@ class unet_pCT_cd_plus_3D(nn.Module):
         
         # add clinical data
         self.fc1 = nn.Linear(self.cd_size,64) #256*6*6*6
-        self.fc2 = nn.Linear(64,216) #256*6*6*6
+        self.fc2 = nn.Linear(64,512) #256*6*6*6
         self.relu = nn.ReLU()
         self.attentionblockmed = MultiAttentionBlock(in_size=filters[4], gate_size=filters[4], inter_size=filters[1],
                                                    nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
