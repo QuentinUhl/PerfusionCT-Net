@@ -39,6 +39,7 @@ class unet_pCT_cd_plus_3D(nn.Module):
         # add clinical data
         self.fc1 = nn.Linear(self.cd_size,64) #256*6*6*6
         self.fc2 = nn.Linear(64,512) #256*6*6*6
+        self.convmed = nn.Conv3d(in_channels=1, out_channels=filters[4], kernel_size=1)
         self.relu = nn.ReLU()
         self.attentionblockmed = MultiAttentionBlock(in_size=filters[4], gate_size=filters[4], inter_size=filters[1],
                                                    nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
@@ -95,7 +96,8 @@ class unet_pCT_cd_plus_3D(nn.Module):
         #print("clinical size : ", clinical_data.shape)
         decoded_clinical_data = self.relu(self.fc2(self.relu(self.fc1(clinical_data.float())))).view((-1,1,8,8,8))
         #print("decoded clinical size : ", decoded_clinical_data.shape)
-        pregating = center + decoded_clinical_data
+        conv_decoded_clinical_data = self.convmed(decoded_clinical_data)
+        pregating = center + conv_decoded_clinical_data
 
         gating = self.gating(pregating) # or (center+decoded_clinical_data)
         
