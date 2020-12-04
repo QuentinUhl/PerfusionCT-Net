@@ -98,7 +98,7 @@ class unet_pCT_cd_plus_3D(nn.Module):
         #print("decoded clinical size : ", decoded_clinical_data.shape)
         conv_decoded_clinical_data = self.convmed(decoded_clinical_data)
         pregating = center + conv_decoded_clinical_data
-
+        
         gating = self.gating(pregating) # or (center+decoded_clinical_data)
         
 
