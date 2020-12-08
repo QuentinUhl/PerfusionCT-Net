@@ -72,12 +72,12 @@
     "output_cdim": 1,
     "lr_rate": 1e-4,
     "l2_reg_weight": 1e-6,
-    "feature_scale": 2,
+    "feature_scale": 4,
     "use_cuda": true,
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "tmax_aug_128_with_cd_plus_conv1_1",
+    "experiment_name": "tmax_aug_128_with_cd_plus_conv1_1_fs_4",
     "criterion": "dice_loss",
     "loss_weights": []
   }
