@@ -111,6 +111,7 @@ class unet_pCT_cd_plus_3D(nn.Module):
             np.savez_compressed('/home/quhl/data/decoded_clinical_data_epoch_' + str(self.med_count//(50*144)),
                                 decoded_clinical_data=decoded_clinical_data.cpu().detach().numpy())
         self.med_count+=1
+        print("Saving decoded clinical data")
         #pregating = center + conv_decoded_clinical_data
 
         pregating, _ = self.attentionblockmed(center, conv_decoded_clinical_data)
