@@ -77,7 +77,7 @@
     "gpu_ids": [0],
     "isTrain": true,
     "checkpoints_dir": "./checkpoints",
-    "experiment_name": "tmax_aug_128_with_cd_plus_conv1_1_fs_4",
+    "experiment_name": "tmax_aug_128_with_cd_plus_conv1_1_fs_4_att_record",
     "criterion": "dice_loss",
     "loss_weights": []
   }
