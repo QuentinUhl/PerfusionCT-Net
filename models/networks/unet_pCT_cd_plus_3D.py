@@ -107,8 +107,8 @@ class unet_pCT_cd_plus_3D(nn.Module):
         #print("decoded clinical size : ", decoded_clinical_data.shape)
         conv_decoded_clinical_data = self.convmed(decoded_clinical_data)
         #TODO Afficher decoded_clinical_data
-        if self.med_count%50 == 0:
-            np.savez_compressed('/home/quhl/data/decoded_clinical_data_epoch_' + str(self.med_count//50),
+        if self.med_count%(50*144) == 0:
+            np.savez_compressed('/home/quhl/data/decoded_clinical_data_epoch_' + str(self.med_count//(50*144)),
                                 decoded_clinical_data=decoded_clinical_data)
         #pregating = center + conv_decoded_clinical_data
 
