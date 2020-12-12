@@ -47,7 +47,7 @@ class unet_pCT_cd_plus_3D(nn.Module):
         self.attentionblockmed = MultiAttentionBlock(in_size=filters[4], gate_size=filters[4], inter_size=filters[3],
                                                    nonlocal_mode=nonlocal_mode, sub_sample_factor= attention_dsample)
         # Recording Activity
-        self.med_count = 0
+        #self.med_count = 0
 
         # attention blocks
         self.attentionblock2 = MultiAttentionBlock(in_size=filters[1], gate_size=filters[2], inter_size=filters[1],
@@ -107,11 +107,11 @@ class unet_pCT_cd_plus_3D(nn.Module):
         #print("decoded clinical size : ", decoded_clinical_data.shape)
         conv_decoded_clinical_data = self.convmed(decoded_clinical_data)
         #TODO Afficher decoded_clinical_data
-        if self.med_count%(50*61) == 0:
-            np.savez_compressed('/home/quhl/data/decoded_clinical_data_epoch_' + str(self.med_count//(50*144)),
-                                decoded_clinical_data=decoded_clinical_data.cpu().detach().numpy())
-            print("Saving decoded clinical data")
-        self.med_count+=1
+        # if self.med_count%(50*61) == 0:
+        #     np.savez_compressed('/home/quhl/data/decoded_clinical_data_epoch_' + str(self.med_count//(50*144)),
+        #                         decoded_clinical_data=decoded_clinical_data.cpu().detach().numpy())
+        #     print("Saving decoded clinical data")
+        # self.med_count+=1
         #pregating = center + conv_decoded_clinical_data
 
         pregating, _ = self.attentionblockmed(center, conv_decoded_clinical_data)
